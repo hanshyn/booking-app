@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: crate-addresses-table
+      author: hanshyn
+      changes:
+        - createTable:
+            tableName: addresses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: numberBuild
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: numberApartment
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
