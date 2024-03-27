@@ -1,3 +1,9 @@
 databaseChangeLog:
   - include:
-      file:
+      file: db/changelog/changes/01-crate-addresses-table-insert-address-to-addresses-table.yaml
+  - include:
+      file: db/changelog/changes/02-create-amenities-table-insert-amenities-to-amenities-table.yaml
+  - include:
+      file: db/changelog/changes/03-crate-accommodation-table-insert-accommodation-to-accommodation-table.yaml
+  - include:
+      file: db/changelog/changes/04-create-accommodation-amenities-table-and-insert.yaml

@@ -7,11 +7,16 @@ databaseChangeLog:
             tableName: addresses
             columns:
               - column:
-                  name: id
+                  name: address_id
                   type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: country
+                  type: varchar(255)
+                  constraints:
                     nullable: false
               - column:
                   name: city
@@ -24,12 +29,20 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: numberBuild
-                  type: varchar(255)
+                  name: number_build
+                  type: int
                   constraints:
                     nullable: false
               - column:
-                  name: numberApartment
+                  name: postcode
                   type: varchar(255)
                   constraints:
                     nullable: false
+        - insert:
+            tableName: addresses
+            columns:
+              - column: {name: country, value: "Ukraine"}
+              - column: {name: city, value: "Kyiv"}
+              - column: {name: street, value: "Shevchenko"}
+              - column: {name: number_build, value: "1"}
+              - column: {name: postcode, value: "01011"}

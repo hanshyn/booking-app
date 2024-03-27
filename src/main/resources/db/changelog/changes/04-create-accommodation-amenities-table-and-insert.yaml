@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accommodation-amenities-table
+      author: hanshyn
+      changes:
+        - createTable:
+            tableName: accommodation_amenities
+            columns:
+              - column:
+                  name: accommodation_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_accommodation_id
+                    references: accommodation(accommodation_id)
+              - column:
+                  name: amenities_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_amenities_id
+                    references: amenities(amenities_id)
+        - insert:
+            tableName: accommodation_amenities
+            columns:
+              - column: {name: accommodation_id, value: "1"}
+              - column: {name: amenities_id, value: "1"}

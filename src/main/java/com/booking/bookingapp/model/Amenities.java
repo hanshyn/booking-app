@@ -1,5 +1,6 @@
 package com.booking.bookingapp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,11 @@ import lombok.Setter;
 public class Amenities {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "amenities_id")
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
     private String description;
 }

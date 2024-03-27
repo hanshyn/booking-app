@@ -1,16 +1,19 @@
 package com.booking.bookingapp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,17 +24,36 @@ import lombok.Setter;
 public class Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "accommodation_id")
     private Long id;
-    @ManyToMany
-    private Set<Type> type;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Types type;
 
     @OneToOne
+    @JoinColumn(name = "address_id", nullable = false)
     private Address location;
 
+    @Column(nullable = false)
     private String size;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "accommodation_amenities",
+            joinColumns = @JoinColumn(name = "accommodation_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenities_id"))
     private List<Amenities> amenities;
+
+    @Column(name = "daily_rate", nullable = false)
     private BigDecimal dailyRate;
+
+    @Column(nullable = false)
     private int availability;
+
+    public enum Types {
+        HOUSE,
+        APARTMENT,
+        CONDO,
+        VACATION_HOME
+    }
 }
