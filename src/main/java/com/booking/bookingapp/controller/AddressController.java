@@ -2,7 +2,7 @@ package com.booking.bookingapp.controller;
 
 import com.booking.bookingapp.dto.accommodation.AddressResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAddressRequestDto;
-import com.booking.bookingapp.service.AddressService;
+import com.booking.bookingapp.service.accommodation.AddressService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

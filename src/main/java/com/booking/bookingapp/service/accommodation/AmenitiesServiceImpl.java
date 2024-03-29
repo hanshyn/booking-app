@@ -1,10 +1,10 @@
-package com.booking.bookingapp.service;
+package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAmenitiesRequestDto;
 import com.booking.bookingapp.mapper.AmenitiesMapper;
 import com.booking.bookingapp.model.Amenities;
-import com.booking.bookingapp.repository.AmenitiesRepository;
+import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

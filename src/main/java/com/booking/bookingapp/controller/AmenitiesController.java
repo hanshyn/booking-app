@@ -2,7 +2,7 @@ package com.booking.bookingapp.controller;
 
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAmenitiesRequestDto;
-import com.booking.bookingapp.service.AmenitiesService;
+import com.booking.bookingapp.service.accommodation.AmenitiesService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

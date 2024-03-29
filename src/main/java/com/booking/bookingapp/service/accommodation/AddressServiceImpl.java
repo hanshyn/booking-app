@@ -1,10 +1,10 @@
-package com.booking.bookingapp.service;
+package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AddressResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAddressRequestDto;
 import com.booking.bookingapp.mapper.AddressMapper;
 import com.booking.bookingapp.model.Address;
-import com.booking.bookingapp.repository.AddressRepository;
+import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

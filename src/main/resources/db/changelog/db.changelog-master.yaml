@@ -7,3 +7,9 @@ databaseChangeLog:
       file: db/changelog/changes/03-crate-accommodation-table-insert-accommodation-to-accommodation-table.yaml
   - include:
       file: db/changelog/changes/04-create-accommodation-amenities-table-and-insert.yaml
+  - include:
+      file: db/changelog/changes/05-create-users-table-and-insert-users-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/06-create-roles-table-insert-role-to-roles-table.yaml
+  - include:
+      file: db/changelog/changes/07-create-user_role-table-insert-user_role-to-user_role-table.yaml

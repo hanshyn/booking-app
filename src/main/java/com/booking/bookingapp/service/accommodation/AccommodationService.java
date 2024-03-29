@@ -1,4 +1,4 @@
-package com.booking.bookingapp.service;
+package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAccommodationRequestDto;

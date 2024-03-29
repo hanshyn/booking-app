@@ -1,4 +1,4 @@
-package com.booking.bookingapp.service;
+package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAccommodationRequestDto;
@@ -6,9 +6,9 @@ import com.booking.bookingapp.mapper.AccommodationMapper;
 import com.booking.bookingapp.model.Accommodation;
 import com.booking.bookingapp.model.Address;
 import com.booking.bookingapp.model.Amenities;
-import com.booking.bookingapp.repository.AccommodationRepository;
-import com.booking.bookingapp.repository.AddressRepository;
-import com.booking.bookingapp.repository.AmenitiesRepository;
+import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
+import com.booking.bookingapp.repository.accommodation.AddressRepository;
+import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
