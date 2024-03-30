@@ -21,6 +21,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public void login() {}
+    public void login() {
 
+    }
 }

@@ -1,7 +1,6 @@
 package com.booking.bookingapp.dto.user;
 
-public record UserRegistrationRequestDto(
-        String email,
+public record UserUpdateRequestDto(
         String firstName,
         String lastName,
         String password,
