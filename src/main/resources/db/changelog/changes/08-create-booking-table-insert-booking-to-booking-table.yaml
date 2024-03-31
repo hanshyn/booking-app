@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-booking-table
+      author: hanshyn
+      changes:
+        - createTable:
+            tableName: bookings
+            columns:
+              - column:
+                  name: booking_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: in_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: out_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: accommodation_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_booking_accommodation_id
+                    references: accommodation(accommodation_id)
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_booking_user_id
+                    references: users(user_id)
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: bookings
+            columns:
+              - column: {name: in_date, valueDate: "2024-03-30"}
+              - column: {name: out_date, valueDate: "2024-04-01"}
+              - column: {name: accommodation_id, value: "1"}
+              - column: {name: user_id, value: "1"}
+              - column: {name: status, value: "PENDING"}

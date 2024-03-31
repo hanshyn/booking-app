@@ -13,3 +13,5 @@ databaseChangeLog:
       file: db/changelog/changes/06-create-roles-table-insert-role-to-roles-table.yaml
   - include:
       file: db/changelog/changes/07-create-user_role-table-insert-user_role-to-user_role-table.yaml
+  - include:
+      file: db/changelog/changes/08-create-booking-table-insert-booking-to-booking-table.yaml

@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccommodationController {
     private final AccommodationService accommodationService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public AccommodationResponseDto createAccommodation(
+    public AccommodationResponseDto create(
             @RequestBody CreateAccommodationRequestDto requestDto) {
         return accommodationService.createAccommodation(requestDto);
     }

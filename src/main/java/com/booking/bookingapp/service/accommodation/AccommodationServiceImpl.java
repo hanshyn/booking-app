@@ -47,6 +47,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationMapper.toDto(accommodationRepository.save(accommodation));
     }
 
+    @Transactional
     @Override
     public List<AccommodationResponseDto> getAll() {
         return accommodationRepository.findAll().stream()
@@ -54,6 +55,7 @@ public class AccommodationServiceImpl implements AccommodationService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public AccommodationResponseDto getById(Long id) {
         Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(

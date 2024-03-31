@@ -23,7 +23,7 @@ public class AmenitiesController {
     private final AmenitiesService amenitiesService;
 
     @PostMapping
-    private AmenitiesResponseDto createAmenities(
+    private AmenitiesResponseDto create(
             @RequestBody CreateAmenitiesRequestDto requestDto) {
         return amenitiesService.save(requestDto);
     }

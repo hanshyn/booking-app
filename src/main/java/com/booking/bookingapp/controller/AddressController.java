@@ -23,7 +23,7 @@ public class AddressController {
     private final AddressService addressService;
 
     @PostMapping
-    public AddressResponseDto createAddress(@RequestBody CreateAddressRequestDto requestDto) {
+    public AddressResponseDto create(@RequestBody CreateAddressRequestDto requestDto) {
         return addressService.save(requestDto);
     }
 
