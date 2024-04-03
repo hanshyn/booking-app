@@ -5,6 +5,8 @@ import com.booking.bookingapp.dto.user.UserUpdateRequestDto;
 import com.booking.bookingapp.dto.user.UserUpdateRoleRequestDto;
 import com.booking.bookingapp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}/role")
     public UserResponseDto updateRole(@PathVariable Long id,
                                       @RequestBody UserUpdateRoleRequestDto requestDto) {
@@ -25,8 +28,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserResponseDto userInfo() {
-        return null;
+    public UserResponseDto userInfo(Authentication authentication) {
+        return userService.getUser(authentication);
     }
 
     @PutMapping("/me")

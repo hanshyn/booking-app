@@ -46,12 +46,6 @@ public class BookingServiceImpl implements BookingService {
         ).orElseThrow(() -> new RuntimeException("Can't found accommodation by id"
                 + requestDto.getAccommodationId()));
 
-        List<AmenitiesResponseDto> amenities = accommodation.getAmenities().stream()
-                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId.getId()).orElseThrow(
-                        () -> new RuntimeException("Can't found amenities by id:" + amenitiesId)))
-                .map(amenitiesMapper::toDto)
-                .toList();
-
         User user = userRepository.findById(requestDto.getUserId()).orElseThrow(
                 () -> new RuntimeException("Can't found user by id" + requestDto.getUserId())
         );
@@ -65,6 +59,12 @@ public class BookingServiceImpl implements BookingService {
 
         AccommodationResponseDto accommodationResponseDto
                 = accommodationMapper.toDto(accommodation);
+
+        List<AmenitiesResponseDto> amenities = accommodation.getAmenities().stream()
+                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId.getId()).orElseThrow(
+                        () -> new RuntimeException("Can't found amenities by id:" + amenitiesId)))
+                .map(amenitiesMapper::toDto)
+                .toList();
 
         accommodationResponseDto.setAmenities(amenities);
 

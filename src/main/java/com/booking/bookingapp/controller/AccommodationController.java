@@ -6,6 +6,7 @@ import com.booking.bookingapp.service.accommodation.AccommodationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccommodationController {
     private final AccommodationService accommodationService;
 
+    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public AccommodationResponseDto create(
@@ -39,12 +41,14 @@ public class AccommodationController {
         return accommodationService.getById(id);
     }
 
+    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @PutMapping("/{id}")
     public AccommodationResponseDto updateById(
             @RequestBody CreateAccommodationRequestDto requestDto, @PathVariable Long id) {
         return accommodationService.updateById(requestDto, id);
     }
 
+    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
