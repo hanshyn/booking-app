@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 public interface UserService {
     UserResponseDto register(UserRegistrationRequestDto requestDto);
 
-    UserResponseDto updateRole(UserUpdateRoleRequestDto requestDto);
+    UserResponseDto updateRole(Long id, UserUpdateRoleRequestDto requestDto);
 
     UserResponseDto getUser(Authentication authentication);
 

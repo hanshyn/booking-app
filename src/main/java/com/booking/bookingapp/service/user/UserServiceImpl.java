@@ -6,11 +6,13 @@ import com.booking.bookingapp.dto.user.UserRegistrationRequestDto;
 import com.booking.bookingapp.dto.user.UserResponseDto;
 import com.booking.bookingapp.dto.user.UserUpdateRequestDto;
 import com.booking.bookingapp.dto.user.UserUpdateRoleRequestDto;
+import com.booking.bookingapp.mapper.RoleMapper;
 import com.booking.bookingapp.mapper.UserMapper;
 import com.booking.bookingapp.model.Role;
 import com.booking.bookingapp.model.User;
 import com.booking.bookingapp.repository.user.RoleRepository;
 import com.booking.bookingapp.repository.user.UserRepository;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleMapper roleMapper;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
@@ -48,22 +51,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateRole(UserUpdateRoleRequestDto requestDto) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UserResponseDto updateRole(Long id, UserUpdateRoleRequestDto requestDto) {
+        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        User userRep = userRepository.findByEmail(user.getEmail()).orElseThrow(
+        User user = userRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Can't find user")
         );
 
-        System.out.println(userRep.getEmail());
-        System.out.println(userRep.getRole());
-
-        Role role = roleRepository.findRolesById(requestDto.roleId());
+        Role role = roleRepository.findById(requestDto.roleId()).orElseThrow(
+                () -> new RuntimeException("")
+        );
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
 
         if ((ADMIN != role.getRole())) {
-            System.out.println("NICE!");
+            user.setRole(roleSet);
+            userRepository.save(user);
+            System.out.println("OK!");
         }
-        return null;
+
+        UserResponseDto userResponseDto = userMapper.toDto(user);
+        roleMapper.toDto(role);
+        userResponseDto.role().add(roleMapper.toDto(role));
+
+        return userResponseDto;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class UserController {
     @PutMapping("/{id}/role")
     public UserResponseDto updateRole(@PathVariable Long id,
                                       @RequestBody UserUpdateRoleRequestDto requestDto) {
-        return userService.updateRole(requestDto);
+        return userService.updateRole(id, requestDto);
     }
 
     @GetMapping("/me")

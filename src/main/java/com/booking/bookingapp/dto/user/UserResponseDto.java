@@ -1,6 +1,5 @@
 package com.booking.bookingapp.dto.user;
 
-import com.booking.bookingapp.model.Role;
 import java.util.Set;
 
 public record UserResponseDto(
@@ -8,6 +7,6 @@ public record UserResponseDto(
         String email,
         String firstName,
         String lastName,
-        Set<Role> role
+        Set<RoleResponseDto> role
 ) {
 }
