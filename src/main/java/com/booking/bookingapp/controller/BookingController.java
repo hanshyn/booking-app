@@ -2,10 +2,14 @@ package com.booking.bookingapp.controller;
 
 import com.booking.bookingapp.dto.booking.BookingRequestDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
+import com.booking.bookingapp.dto.booking.BookingSearchParameters;
 import com.booking.bookingapp.service.booking.BookingService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,19 +26,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
     private final BookingService bookingService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public BookingResponseDto create(@RequestBody BookingRequestDto requestDto) {
+    public BookingResponseDto create(@RequestBody @Valid BookingRequestDto requestDto) {
         return bookingService.save(requestDto);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
     @GetMapping()
-    public List<BookingResponseDto> search() {
-        return bookingService.search();
+    public List<BookingResponseDto> search(BookingSearchParameters searchParameters) {
+        return bookingService.search(searchParameters);
     }
 
     @GetMapping("/my")
-    public List<BookingResponseDto> getByUser() {
-        return bookingService.getByUser();
+    public List<BookingResponseDto> getByUser(Pageable pageable) {
+        return bookingService.getByUser(pageable);
     }
 
     @GetMapping("/{id}")
@@ -44,7 +50,7 @@ public class BookingController {
 
     @PutMapping("/{id}")
     public BookingResponseDto updateById(@PathVariable Long id,
-                                         @RequestBody BookingRequestDto requestDto) {
+                                         @RequestBody @Valid BookingRequestDto requestDto) {
         return bookingService.updateById(id, requestDto);
     }
 

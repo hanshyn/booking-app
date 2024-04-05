@@ -7,6 +7,7 @@ import com.booking.bookingapp.model.Amenities;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class AmenitiesServiceImpl implements AmenitiesService {
     }
 
     @Override
-    public List<AmenitiesResponseDto> getAll() {
-        return amenitiesRepository.findAll().stream()
+    public List<AmenitiesResponseDto> getAll(Pageable pageable) {
+        return amenitiesRepository.findAll(pageable).stream()
                 .map(amenitiesMapper::toDto)
                 .toList();
     }

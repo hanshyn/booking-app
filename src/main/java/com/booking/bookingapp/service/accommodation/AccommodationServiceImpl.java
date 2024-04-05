@@ -11,6 +11,7 @@ import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,8 +50,8 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Transactional
     @Override
-    public List<AccommodationResponseDto> getAll() {
-        return accommodationRepository.findAll().stream()
+    public List<AccommodationResponseDto> getAll(Pageable pageable) {
+        return accommodationRepository.findAll(pageable).stream()
                 .map(accommodationMapper::toDto)
                 .toList();
     }

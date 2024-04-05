@@ -7,6 +7,7 @@ import com.booking.bookingapp.model.Address;
 import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressResponseDto> getAll() {
-        return addressRepository.findAll().stream()
+    public List<AddressResponseDto> getAll(Pageable pageable) {
+        return addressRepository.findAll(pageable).stream()
                 .map(addressMapper::toDto)
                 .toList();
     }

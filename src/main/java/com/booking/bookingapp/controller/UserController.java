@@ -4,6 +4,7 @@ import com.booking.bookingapp.dto.user.UserResponseDto;
 import com.booking.bookingapp.dto.user.UserUpdateRequestDto;
 import com.booking.bookingapp.dto.user.UserUpdateRoleRequestDto;
 import com.booking.bookingapp.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}/role")
     public UserResponseDto updateRole(@PathVariable Long id,
-                                      @RequestBody UserUpdateRoleRequestDto requestDto) {
+                                      @RequestBody @Valid UserUpdateRoleRequestDto requestDto) {
         return userService.updateRole(id, requestDto);
     }
 
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public UserResponseDto updateUser(@RequestBody UserUpdateRequestDto requestDto) {
+    public UserResponseDto updateUser(@RequestBody @Valid UserUpdateRequestDto requestDto) {
         return userService.updateUser(requestDto);
     }
 }

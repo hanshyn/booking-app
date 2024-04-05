@@ -3,26 +3,22 @@ package com.booking.bookingapp.dto.booking;
 import com.booking.bookingapp.model.Booking;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 @Data
 public class BookingRequestDto {
-    @NotBlank
-    @Length(min = 4, max = 20)
     @FutureOrPresent
     private LocalDate checkInDate;
-    @NotBlank
-    @Length(min = 4, max = 20)
     @Future
     private LocalDate checkOutDate;
-    @NotBlank
+    @Min(value = 1, message = "AccommodationId should be greater than 1")
     private Long accommodationId;
-    @NotBlank
+    @Min(value = 1, message = "User id should be greater than 2")
     private Long userId;
-    @NotBlank
-    @Length(min = 4, max = 20)
+    @Pattern(regexp = "PENDING|CONFIRMED|CANCELED|EXPIRED",
+            message = "Status should be PENDING, CONFIRMED, CANCELED or EXPIRED")
     private Booking.Status status;
 }

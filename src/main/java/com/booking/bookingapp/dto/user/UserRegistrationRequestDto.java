@@ -2,6 +2,7 @@ package com.booking.bookingapp.dto.user;
 
 import com.booking.bookingapp.validation.FieldMatch;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
@@ -15,10 +16,10 @@ public record UserRegistrationRequestDto(
         @Email
         String email,
         @NotBlank
-        @Length(min = 8, max = 20)
+        @Length(min = 3, max = 20)
         String firstName,
         @NotBlank
-        @Length(min = 8, max = 20)
+        @Length(min = 3, max = 20)
         String lastName,
         @NotBlank
         @Length(min = 8, max = 20)
@@ -26,8 +27,8 @@ public record UserRegistrationRequestDto(
         @NotBlank
         @Length(min = 8, max = 20)
         String repeatPassword,
-        @NotBlank
-        @Min(1)
+        @Min(value = 2, message = "Role id should be greater than 2")
+        @Max(value = 4, message = "Role id should be less than 4")
         Long roleId
 ) {
 }

@@ -6,6 +6,8 @@ import com.booking.bookingapp.dto.user.UserRegistrationRequestDto;
 import com.booking.bookingapp.dto.user.UserResponseDto;
 import com.booking.bookingapp.dto.user.UserUpdateRequestDto;
 import com.booking.bookingapp.dto.user.UserUpdateRoleRequestDto;
+import com.booking.bookingapp.exception.EntityNotFoundException;
+import com.booking.bookingapp.exception.RegistrationException;
 import com.booking.bookingapp.mapper.RoleMapper;
 import com.booking.bookingapp.mapper.UserMapper;
 import com.booking.bookingapp.model.Role;
@@ -15,6 +17,7 @@ import com.booking.bookingapp.repository.user.UserRepository;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,23 +34,33 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleMapper roleMapper;
 
+    @SneakyThrows
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
         if (userRepository.findByEmail(requestDto.email()).isPresent()) {
-            System.out.println("Email is DB");
-            return null;
+            throw new RegistrationException("Can't register user, the email address exists DB");
         }
 
-        Role role = roleRepository.findRolesById(requestDto.roleId());
+        Role role = roleRepository.findById(requestDto.roleId()).orElseThrow(
+                () -> new EntityNotFoundException("Can't found role by id" + requestDto.roleId())
+        );
+
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
 
         User user = new User();
         user.setEmail(requestDto.email());
         user.setFirstName(requestDto.firstName());
         user.setLastName(requestDto.lastName());
         user.setPassword(passwordEncoder.encode(requestDto.password()));
-        user.setRole(Set.of(role));
+        user.setRole(roleSet);
 
-        return userMapper.toDto(userRepository.save(user));
+        userRepository.save(user);
+
+        UserResponseDto userResponseDto = userMapper.toDto(user);
+        userResponseDto.role().add(roleMapper.toDto(role));
+
+        return userResponseDto;
     }
 
     @Override
@@ -55,12 +68,13 @@ public class UserServiceImpl implements UserService {
         //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         User user = userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't find user")
+                () -> new EntityNotFoundException("Can't found user by id: " + id)
         );
 
         Role role = roleRepository.findById(requestDto.roleId()).orElseThrow(
-                () -> new RuntimeException("")
+                () -> new EntityNotFoundException("Can't found role by id: " + requestDto.roleId())
         );
+
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
 
@@ -71,7 +85,6 @@ public class UserServiceImpl implements UserService {
         }
 
         UserResponseDto userResponseDto = userMapper.toDto(user);
-        roleMapper.toDto(role);
         userResponseDto.role().add(roleMapper.toDto(role));
 
         return userResponseDto;
@@ -81,7 +94,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUser(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         user = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new RuntimeException("Can't find user")
+                () -> new EntityNotFoundException("Can't find user by email")
         );
 
         return userMapper.toDto(user);
@@ -92,7 +105,7 @@ public class UserServiceImpl implements UserService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         user = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new RuntimeException("Can't find user")
+                () -> new EntityNotFoundException("Can't found user")
         );
 
         user.setFirstName(requestDto.firstName());

@@ -3,8 +3,10 @@ package com.booking.bookingapp.controller;
 import com.booking.bookingapp.dto.accommodation.AddressResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAddressRequestDto;
 import com.booking.bookingapp.service.accommodation.AddressService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AddressController {
     private final AddressService addressService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public AddressResponseDto create(@RequestBody CreateAddressRequestDto requestDto) {
+    public AddressResponseDto create(@RequestBody @Valid CreateAddressRequestDto requestDto) {
         return addressService.save(requestDto);
     }
 
     @GetMapping
-    public List<AddressResponseDto> getAll() {
-        return addressService.getAll();
+    public List<AddressResponseDto> getAll(Pageable pageable) {
+        return addressService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
@@ -38,7 +41,7 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public AddressResponseDto updateById(@RequestBody CreateAddressRequestDto requestDto,
+    public AddressResponseDto updateById(@RequestBody @Valid CreateAddressRequestDto requestDto,
                                          @PathVariable Long id) {
         return addressService.updateById(requestDto, id);
     }

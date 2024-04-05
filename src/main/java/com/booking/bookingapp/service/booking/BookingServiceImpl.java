@@ -5,6 +5,7 @@ import com.booking.bookingapp.dto.accommodation.AddressResponseDto;
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.booking.BookingRequestDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
+import com.booking.bookingapp.dto.booking.BookingSearchParameters;
 import com.booking.bookingapp.mapper.AccommodationMapper;
 import com.booking.bookingapp.mapper.AddressMapper;
 import com.booking.bookingapp.mapper.AmenitiesMapper;
@@ -17,9 +18,12 @@ import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
 import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import com.booking.bookingapp.repository.booking.BookingRepository;
+import com.booking.bookingapp.repository.booking.BookingSpecificationBuilder;
 import com.booking.bookingapp.repository.user.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final AddressMapper addressMapper;
     private final AmenitiesRepository amenitiesRepository;
     private final AmenitiesMapper amenitiesMapper;
+    private final BookingSpecificationBuilder bookingSpecificationBuilder;
 
     @Transactional
     @Override
@@ -81,14 +86,19 @@ public class BookingServiceImpl implements BookingService {
         return bookingResponseDto;
     }
 
+    @Transactional
     @Override
-    public List<BookingResponseDto> search() {
-        return null;
+    public List<BookingResponseDto> search(BookingSearchParameters searchParameters) {
+        Specification<Booking> bookingSpecification = bookingSpecificationBuilder
+                .build(searchParameters);
+        return bookingRepository.findAll(bookingSpecification).stream()
+                .map(bookingMapper::toDto)
+                .toList();
     }
 
     @Transactional
     @Override
-    public List<BookingResponseDto> getByUser() {
+    public List<BookingResponseDto> getByUser(Pageable pageable) {
         List<Booking> bookings = bookingRepository.findBookingsByUserId(1L);
 
         return bookings.stream().map(bookingMapper::toDto).toList();

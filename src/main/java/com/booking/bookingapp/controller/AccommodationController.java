@@ -3,8 +3,10 @@ package com.booking.bookingapp.controller;
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAccommodationRequestDto;
 import com.booking.bookingapp.service.accommodation.AccommodationService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,13 +29,13 @@ public class AccommodationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public AccommodationResponseDto create(
-            @RequestBody CreateAccommodationRequestDto requestDto) {
+            @RequestBody @Valid CreateAccommodationRequestDto requestDto) {
         return accommodationService.createAccommodation(requestDto);
     }
 
     @GetMapping
-    public List<AccommodationResponseDto> getAll() {
-        return accommodationService.getAll();
+    public List<AccommodationResponseDto> getAll(Pageable pageable) {
+        return accommodationService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
@@ -44,7 +46,7 @@ public class AccommodationController {
     @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @PutMapping("/{id}")
     public AccommodationResponseDto updateById(
-            @RequestBody CreateAccommodationRequestDto requestDto, @PathVariable Long id) {
+            @RequestBody @Valid CreateAccommodationRequestDto requestDto, @PathVariable Long id) {
         return accommodationService.updateById(requestDto, id);
     }
 
