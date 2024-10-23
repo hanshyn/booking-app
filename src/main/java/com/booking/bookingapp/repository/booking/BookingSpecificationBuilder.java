@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class BookingSpecificationBuilder implements SpecificationBuilder<Booking> {
-    private static final String USER_ID = "userId";
+    private static final String USER_ID = "id";
     private static final String STATUS = "status";
 
     private final SpecificationProviderManager<Booking> bookingSpecificationProviderManager;

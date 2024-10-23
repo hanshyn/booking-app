@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccommodationController {
     private final AccommodationService accommodationService;
 
-    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public AccommodationResponseDto create(
-            @RequestBody @Valid CreateAccommodationRequestDto requestDto) {
-        return accommodationService.createAccommodation(requestDto);
+            @RequestBody @Valid CreateAccommodationRequestDto requestDto,
+            UriComponentsBuilder urlBuilder) {
+        return accommodationService.save(requestDto, urlBuilder);
     }
 
     @GetMapping
@@ -43,14 +45,14 @@ public class AccommodationController {
         return accommodationService.getById(id);
     }
 
-    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @PutMapping("/{id}")
     public AccommodationResponseDto updateById(
             @RequestBody @Valid CreateAccommodationRequestDto requestDto, @PathVariable Long id) {
         return accommodationService.updateById(requestDto, id);
     }
 
-    @PreAuthorize("hasRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {

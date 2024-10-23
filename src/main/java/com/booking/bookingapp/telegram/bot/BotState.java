@@ -1,6 +1,4 @@
-package com.booking.bookingapp.telegram;
-
-import com.booking.bookingapp.telegram.TelegramMenu;
+package com.booking.bookingapp.telegram.bot;
 
 public enum BotState {
     START,

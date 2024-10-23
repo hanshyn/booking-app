@@ -1,5 +1,6 @@
-package com.booking.bookingapp.telegram;
+package com.booking.bookingapp.telegram.init;
 
+import com.booking.bookingapp.telegram.TelegramBotBookingApp;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -9,17 +10,17 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
 public class BotInitializer {
-    private final TelegramBotBookingApp bot;
+    private final TelegramBotBookingApp telegramBotBookingApp;
 
     public BotInitializer(TelegramBotBookingApp bot) {
-        this.bot = bot;
+        this.telegramBotBookingApp = bot;
     }
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(bot);
+            telegramBotsApi.registerBot(telegramBotBookingApp);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

@@ -45,6 +45,9 @@ public class User implements UserDetails {
     )
     private Set<Role> role = new HashSet<>();
 
+    @Column(name = "telegram_id", unique = true)
+    private Long telegramId;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role;

@@ -2,6 +2,7 @@ package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAmenitiesRequestDto;
+import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.mapper.AmenitiesMapper;
 import com.booking.bookingapp.model.Amenities;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
@@ -9,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +18,7 @@ public class AmenitiesServiceImpl implements AmenitiesService {
     private final AmenitiesMapper amenitiesMapper;
     private final AmenitiesRepository amenitiesRepository;
 
+    @Transactional
     @Override
     public AmenitiesResponseDto save(CreateAmenitiesRequestDto requestDto) {
         return amenitiesMapper.toDto(
@@ -34,19 +37,13 @@ public class AmenitiesServiceImpl implements AmenitiesService {
 
     @Override
     public AmenitiesResponseDto getById(Long id) {
-        Amenities amenities = amenitiesRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't find amenities by id: " + id)
-        );
-
-        return amenitiesMapper.toDto(amenities);
+        return amenitiesMapper.toDto(getAmenitiesById(id));
     }
 
+    @Transactional
     @Override
     public AmenitiesResponseDto updateById(CreateAmenitiesRequestDto requestDto, Long id) {
-        Amenities amenities = amenitiesRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't find amenities by id: " + id)
-        );
-
+        Amenities amenities = getAmenitiesById(id);
         amenities.setName(requestDto.getName());
         amenities.setDescription(requestDto.getDescription());
 
@@ -56,5 +53,10 @@ public class AmenitiesServiceImpl implements AmenitiesService {
     @Override
     public void deleteById(Long id) {
         amenitiesRepository.deleteById(id);
+    }
+
+    private Amenities getAmenitiesById(Long id) {
+        return amenitiesRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found amenities by id: " + id));
     }
 }

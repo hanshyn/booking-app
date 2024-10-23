@@ -2,6 +2,7 @@ package com.booking.bookingapp.service.accommodation;
 
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAccommodationRequestDto;
+import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.mapper.AccommodationMapper;
 import com.booking.bookingapp.model.Accommodation;
 import com.booking.bookingapp.model.Address;
@@ -9,11 +10,15 @@ import com.booking.bookingapp.model.Amenities;
 import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
 import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
+import com.booking.bookingapp.service.notification.NotificationService;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
@@ -22,33 +27,24 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final AccommodationMapper accommodationMapper;
     private final AddressRepository addressRepository;
     private final AmenitiesRepository amenitiesRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     @Override
-    public AccommodationResponseDto createAccommodation(CreateAccommodationRequestDto requestDto) {
+    public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto,
+                                         UriComponentsBuilder uriBuilder) {
         Accommodation accommodation = accommodationMapper.toModel(requestDto);
+        accommodation.setType(requestDto.getType());
+        accommodation.setLocation(getAddressById(requestDto.getAddressId()));
+        accommodation.setAmenities(getAmenitiesByIds(requestDto.getAmenitiesId()));
 
-        Accommodation.Types types = requestDto.getType();
+        AccommodationResponseDto responseDto =
+                accommodationMapper.toDto(accommodationRepository.save(accommodation));
 
-        Address address = addressRepository.findById(requestDto.getAddressId()).orElseThrow(
-                () -> new RuntimeException("Can't found address by address_id:"
-                        + requestDto.getAddressId())
-        );
-
-        List<Amenities> amenities = requestDto.getAmenitiesId().stream()
-                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId).orElseThrow(
-                        () -> new RuntimeException("Can't found amenities by id: " + amenitiesId)
-                ))
-                .toList();
-
-        accommodation.setType(types);
-        accommodation.setLocation(address);
-        accommodation.setAmenities(amenities);
-
-        return accommodationMapper.toDto(accommodationRepository.save(accommodation));
+        notificationService.createdAccommodation(responseDto, uriBuilder);
+        return responseDto;
     }
 
-    @Transactional
     @Override
     public List<AccommodationResponseDto> getAll(Pageable pageable) {
         return accommodationRepository.findAll(pageable).stream()
@@ -56,40 +52,20 @@ public class AccommodationServiceImpl implements AccommodationService {
                 .toList();
     }
 
-    @Transactional
     @Override
     public AccommodationResponseDto getById(Long id) {
-        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't found accommodation by id:" + id)
-        );
-
-        return accommodationMapper.toDto(accommodation);
+        return accommodationMapper.toDto(getAccommodationById(id));
     }
 
     @Transactional
     @Override
     public AccommodationResponseDto updateById(CreateAccommodationRequestDto requestDto, Long id) {
-        Accommodation.Types type = requestDto.getType();
+        Accommodation accommodation = getAccommodationById(id);
 
-        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't found accommodation by id:" + id)
-        );
-
-        Address address = addressRepository.findById(requestDto.getAddressId()).orElseThrow(
-                () -> new RuntimeException(
-                        "Can't found address by id: " + requestDto.getAddressId()
-                )
-        );
-
-        List<Amenities> amenities = requestDto.getAmenitiesId().stream()
-                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId).orElseThrow(
-                        () -> new RuntimeException("Can't found amenities by id:" + amenitiesId)))
-                .toList();
-
-        accommodation.setType(type);
-        accommodation.setLocation(address);
+        accommodation.setType(requestDto.getType());
+        accommodation.setLocation(getAddressById(requestDto.getAddressId()));
         accommodation.setSize(requestDto.getSize());
-        accommodation.setAmenities(amenities);
+        accommodation.setAmenities(getAmenitiesByIds(requestDto.getAmenitiesId()));
         accommodation.setDailyRate(requestDto.getDailyRate());
         accommodation.setAvailability(requestDto.getAvailability());
 
@@ -101,11 +77,20 @@ public class AccommodationServiceImpl implements AccommodationService {
         accommodationRepository.deleteById(id);
     }
 
-    private List<Amenities> getAmenitiesByIds(CreateAccommodationRequestDto requestDto) {
-        return requestDto.getAmenitiesId().stream()
+    private Address getAddressById(Long id) {
+        return addressRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found address gy id: " + id));
+    }
+
+    private Accommodation getAccommodationById(Long id) {
+        return accommodationRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found accommodation by id: " + id));
+    }
+
+    private Set<Amenities> getAmenitiesByIds(List<Long> amenitiesIds) {
+        return amenitiesIds.stream()
                 .map(amenitiesId -> amenitiesRepository.findById(amenitiesId).orElseThrow(
-                        () -> new RuntimeException("Can't find category by id:"
-                                + amenitiesId)))
-                .toList();
+                        () -> new EntityNotFoundException("Can't find amenities by id:"
+                                + amenitiesId))).collect(Collectors.toSet());
     }
 }

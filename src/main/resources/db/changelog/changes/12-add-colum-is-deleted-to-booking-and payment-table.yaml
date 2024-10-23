@@ -4,8 +4,20 @@ databaseChangeLog:
       author: hanshyn
       changes:
         - addColumn:
-            tableName: booking
+            tableName: bookings
             columns:
               - column:
                   name: is_deleted
                   type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - addColumn:
+            tableName: payments
+            columns:
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

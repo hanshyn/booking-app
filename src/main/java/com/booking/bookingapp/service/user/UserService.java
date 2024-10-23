@@ -15,5 +15,4 @@ public interface UserService {
     UserResponseDto getUser(Authentication authentication);
 
     UserResponseDto updateUser(UserUpdateRequestDto requestDto);
-
 }

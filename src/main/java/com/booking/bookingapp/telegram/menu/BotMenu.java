@@ -1,6 +1,5 @@
-package com.booking.bookingapp.telegram;
+package com.booking.bookingapp.telegram.menu;
 
-import com.booking.bookingapp.service.user.UserService;
 import com.booking.bookingapp.telegram.service.BotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,21 +7,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import java.util.ArrayList;
-import java.util.List;
 
 @PropertySource("classpath:messages.properties")
 @RequiredArgsConstructor
 @Component
 public class BotMenu {
-    private final static String HELP = "Help";
-    private final static String YOUR_ROLE = "Info";
-    private final static String USER_NAME = "Registration";
+    private static final String HELP = "Help";
+    private static final String YOUR_ROLE = "Info";
+    private static final String USER_NAME = "Registration";
 
     private final BotService botService;
 
@@ -32,7 +24,7 @@ public class BotMenu {
     @Value("${reply.info}")
     private String infoMessage;
 
-    public ReplyKeyboardMarkup getMainMenu() {
+    /*public ReplyKeyboardMarkup getMainMenu() {
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
         markup.setResizeKeyboard(true);
 
@@ -44,7 +36,7 @@ public class BotMenu {
         List<KeyboardRow> rows = List.of(row);
         markup.setKeyboard(rows);
         return markup;
-    }
+    }*/
 
     public SendMessage getResponseMessage(Message message) {
         switch (message.getText()) {
@@ -60,7 +52,7 @@ public class BotMenu {
     }
 
     private SendMessage greetingMessage(Message message) {
-        SendMessage response = new SendMessage();
+        /*SendMessage response = new SendMessage();
         response.setChatId(message.getChatId());
         response.setText("Hi, "
                 + message.getFrom().getUserName()
@@ -68,31 +60,37 @@ public class BotMenu {
                 + message.getText());
         response.setReplyMarkup(getMainMenu());
         return response;
+        */
+        return null;
     }
 
     private SendMessage getHelpResponse(Message message) {
-        SendMessage response = new SendMessage();
+        /*SendMessage response = new SendMessage();
         response.setText(helpMessage);
         response.setChatId(message.getChatId());
         response.setReplyMarkup(getMainMenu());
         return response;
+        */
+        return null;
     }
 
     private SendMessage getInfo(Message message) {
-        String role = botService.getInfo(message.getChatId());
+        /*String role = botService.getInfo(message.getChatId());
 
         return SendMessage.builder()
                 .chatId(message.getChatId())
                 .text(infoMessage + role)
                 .replyMarkup(getMainMenu())
                 .build();
+                */
+        return null;
     }
 
     private SendMessage getRegistration(Message message) {
-//        @Email
-//        String email;
-//        email = message.getText();
-//        String str = service.saveTgId(email, message.getChatId());
+        /*@Email
+        String email;
+        email = message.getText();
+        String str = service.saveTgId(email, message.getChatId());*/
         SendMessage response = new SendMessage();
         response.setChatId(message.getChatId());
 
@@ -102,7 +100,7 @@ public class BotMenu {
         return response;
     }
 
-    public InlineKeyboardMarkup inlineKeyboardMarkup() {
+    /*public InlineKeyboardMarkup inlineKeyboardMarkup() {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton("Test inline button");
@@ -117,5 +115,5 @@ public class BotMenu {
         markupInline.setKeyboard(rowList);
 
         return markupInline;
-    }
+    }*/
 }

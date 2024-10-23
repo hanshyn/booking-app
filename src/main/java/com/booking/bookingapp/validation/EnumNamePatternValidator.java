@@ -2,18 +2,15 @@ package com.booking.bookingapp.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.Payload;
-
-import java.lang.annotation.Annotation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class BookingStatusValidator implements ConstraintValidator<BookingStatus, Enum<?>> {
+public class EnumNamePatternValidator implements ConstraintValidator<EnumNamePattern, Enum<?>> {
     private Pattern pattern;
 
     @Override
-    public void initialize(BookingStatus bookingStatus) {
+    public void initialize(EnumNamePattern bookingStatus) {
         try {
             pattern = Pattern.compile(bookingStatus.regexp());
         } catch (PatternSyntaxException e) {

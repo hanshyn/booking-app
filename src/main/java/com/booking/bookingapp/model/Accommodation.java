@@ -14,8 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +48,7 @@ public class Accommodation {
     @JoinTable(name = "accommodation_amenities",
             joinColumns = @JoinColumn(name = "accommodation_id"),
             inverseJoinColumns = @JoinColumn(name = "amenities_id"))
-    private List<Amenities> amenities = new ArrayList<>();
+    private Set<Amenities> amenities = new HashSet<>();
 
     @Column(name = "daily_rate", nullable = false)
     private BigDecimal dailyRate;
@@ -60,6 +60,11 @@ public class Accommodation {
         HOUSE,
         APARTMENT,
         CONDO,
-        VACATION_HOME
+        VACATION_HOME,
+        HOTEL,
+        HOSTEL,
+        MOTEL,
+        LUXURY_TENT,
+        VILLA
     }
 }

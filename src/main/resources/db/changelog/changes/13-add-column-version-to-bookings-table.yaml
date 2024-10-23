@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-column-version-to-booking-table
+      author: hanshyn
+      changes:
+        - addColumn:
+            tableName: bookings
+            columns:
+              - column:
+                  name: version
+                  type: bigint

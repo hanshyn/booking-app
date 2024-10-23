@@ -17,3 +17,11 @@ databaseChangeLog:
       file: db/changelog/changes/08-create-booking-table-insert-booking-to-booking-table.yaml
   - include:
       file: db/changelog/changes/09-update-password-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/10-add-colum-tgId-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/11-create-payments-table.yaml
+  - include:
+      file: db/changelog/changes/12-add-colum-is-deleted-to-booking-and payment-table.yaml
+  - include:
+      file: db/changelog/changes/13-add-column-version-to-bookings-table.yaml

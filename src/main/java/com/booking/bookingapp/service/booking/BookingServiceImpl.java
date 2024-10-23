@@ -1,17 +1,20 @@
 package com.booking.bookingapp.service.booking;
 
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
-import com.booking.bookingapp.dto.accommodation.AddressResponseDto;
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.booking.BookingRequestDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
 import com.booking.bookingapp.dto.booking.BookingSearchParameters;
+import com.booking.bookingapp.dto.booking.UpdateBookingRequestDto;
+import com.booking.bookingapp.exception.BookingException;
+import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.mapper.AccommodationMapper;
 import com.booking.bookingapp.mapper.AddressMapper;
 import com.booking.bookingapp.mapper.AmenitiesMapper;
 import com.booking.bookingapp.mapper.BookingMapper;
 import com.booking.bookingapp.model.Accommodation;
 import com.booking.bookingapp.model.Address;
+import com.booking.bookingapp.model.Amenities;
 import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.model.User;
 import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
@@ -20,16 +23,26 @@ import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import com.booking.bookingapp.repository.booking.BookingRepository;
 import com.booking.bookingapp.repository.booking.BookingSpecificationBuilder;
 import com.booking.bookingapp.repository.user.UserRepository;
+import com.booking.bookingapp.service.notification.NotificationService;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
 public class BookingServiceImpl implements BookingService {
+    private static final Long ONE_DAY = 1L;
+    private static final Long ZERO = 0L;
+
     private final BookingMapper bookingMapper;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
@@ -40,104 +53,184 @@ public class BookingServiceImpl implements BookingService {
     private final AmenitiesRepository amenitiesRepository;
     private final AmenitiesMapper amenitiesMapper;
     private final BookingSpecificationBuilder bookingSpecificationBuilder;
+    private final NotificationService notificationService;
+
+    @Value("${site.url}")
+    private String url;
 
     @Transactional
     @Override
-    public BookingResponseDto save(BookingRequestDto requestDto) {
+    public BookingResponseDto save(BookingRequestDto requestDto, UriComponentsBuilder uri) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        checkPendingPaymentBooking(user.getId());
+
+        Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
+        checkedAccommodationAvailability(accommodation);
+
         Booking booking = bookingMapper.toModel(requestDto);
-
-        Accommodation accommodation = accommodationRepository.findById(
-                requestDto.getAccommodationId()
-        ).orElseThrow(() -> new RuntimeException("Can't found accommodation by id"
-                + requestDto.getAccommodationId()));
-
-        User user = userRepository.findById(requestDto.getUserId()).orElseThrow(
-                () -> new RuntimeException("Can't found user by id" + requestDto.getUserId())
-        );
-
         booking.setAccommodation(accommodation);
         booking.setUser(user);
-
+        booking.setStatus(Booking.Status.PENDING);
         bookingRepository.save(booking);
-
-        BookingResponseDto bookingResponseDto = bookingMapper.toDto(booking);
 
         AccommodationResponseDto accommodationResponseDto
                 = accommodationMapper.toDto(accommodation);
+        accommodationResponseDto.setAmenities(getAllAmenitiesDto(accommodation.getAmenities()));
+        accommodationResponseDto.setLocation(addressMapper.toDto(
+                getAddressById(accommodation.getLocation().getId())));
 
-        List<AmenitiesResponseDto> amenities = accommodation.getAmenities().stream()
-                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId.getId()).orElseThrow(
-                        () -> new RuntimeException("Can't found amenities by id:" + amenitiesId)))
-                .map(amenitiesMapper::toDto)
-                .toList();
-
-        accommodationResponseDto.setAmenities(amenities);
-
-        Address address = addressRepository.findById(accommodation.getLocation().getId())
-                .orElseThrow(
-                        () -> new RuntimeException("Can't found address by id: "
-                                + accommodation.getLocation().getId())
-                );
-
-        AddressResponseDto addressResponseDto = addressMapper.toDto(address);
-        accommodationResponseDto.setLocation(addressResponseDto);
+        BookingResponseDto bookingResponseDto = bookingMapper.toDto(booking);
         bookingResponseDto.setAccommodation(accommodationResponseDto);
 
+        notificationService.createdBooking(bookingResponseDto, uri);
         return bookingResponseDto;
     }
 
-    @Transactional
     @Override
-    public List<BookingResponseDto> search(BookingSearchParameters searchParameters) {
+    public List<BookingResponseDto> search(BookingSearchParameters searchParameters,
+                                           Pageable pageable) {
         Specification<Booking> bookingSpecification = bookingSpecificationBuilder
                 .build(searchParameters);
-        return bookingRepository.findAll(bookingSpecification).stream()
+        return bookingRepository.findAll(bookingSpecification, pageable).stream()
                 .map(bookingMapper::toDto)
                 .toList();
     }
 
-    @Transactional
     @Override
     public List<BookingResponseDto> getByUser(Pageable pageable) {
-        List<Booking> bookings = bookingRepository.findBookingsByUserId(1L);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Booking> bookings = bookingRepository.findBookingsByUser(user, pageable);
 
         return bookings.stream().map(bookingMapper::toDto).toList();
     }
 
-    @Transactional
     @Override
     public BookingResponseDto getById(Long id) {
-        Booking booking = bookingRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't found booking by id" + id)
-        );
-
-        return bookingMapper.toDto(booking);
+        return bookingMapper.toDto(getBookingById(id));
     }
 
     @Transactional
     @Override
-    public BookingResponseDto updateById(Long id, BookingRequestDto requestDto) {
-        Booking booking = bookingRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't found booking by id" + id)
-        );
+    public BookingResponseDto updateById(Long id, UpdateBookingRequestDto requestDto,
+                                         UriComponentsBuilder uriBuilder) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        Booking booking = getBookingById(id);
         booking.setCheckInDate(requestDto.getCheckInDate());
         booking.setCheckOutDate(requestDto.getCheckOutDate());
-
-        Accommodation accommodation
-                = accommodationRepository.findById(requestDto.getAccommodationId()).orElseThrow();
-        booking.setAccommodation(accommodation);
-        User user = userRepository.findById(requestDto.getUserId()).orElseThrow();
-        booking.setUser(user);
+        booking.setStatus(requestDto.getStatus());
         booking.setStatus(requestDto.getStatus());
 
-        bookingRepository.save(booking);
+        Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
 
-        return bookingMapper.toDto(booking);
+        if (unchangedAccommodation(accommodation, booking)) {
+            booking.setAccommodation(accommodation);
+        } else {
+            checkedAccommodationAvailability(accommodation);
+
+            booking.setAccommodation(accommodation);
+
+            notificationService.releasedAccommodation(
+                    accommodationMapper.toDto(accommodation), uriBuilder);
+        }
+
+        bookingRepository.save(booking);
+        BookingResponseDto bookingResponseDto = bookingMapper.toDto(booking);
+
+        if (bookingResponseDto.getStatus().equals(Booking.Status.CANCELED)) {
+            notificationService.canceledBooking(
+                    user.getTelegramId(),
+                    bookingResponseDto,
+                    uriBuilder,
+                    bookingResponseDto.getStatus());
+            notificationService.releasedAccommodation(
+                    bookingResponseDto.getAccommodation(), uriBuilder);
+        }
+
+        return bookingResponseDto;
     }
 
     @Override
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 00 13 * * *")
+    protected void processExpiredBookings() {
+        LocalDate tomorrow = LocalDate.now().plusDays(ONE_DAY);
+        List<Booking.Status> statuses = List.of(Booking.Status.PENDING, Booking.Status.CONFIRMED);
+
+        List<Booking> bookings = bookingRepository
+                .findAllByCheckOutDateLessThanEqualAndStatusIn(tomorrow, statuses);
+
+        if (bookings.isEmpty()) {
+            notificationService.notifyNoExpiredBookings();
+        } else {
+            bookings.forEach(booking -> {
+                UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url);
+
+                booking.setStatus(Booking.Status.EXPIRED);
+                bookingRepository.save(booking);
+
+                notificationService.releasedAccommodation(
+                        accommodationMapper.toDto(booking.getAccommodation()),
+                        uriComponentsBuilder);
+            });
+        }
+    }
+
+    private void checkPendingPaymentBooking(Long userId) {
+        if (bookingRepository.countAllByStatusAndUserId(Booking.Status.PENDING, userId)
+                .orElse(ZERO) > ZERO) {
+            throw new BookingException("Payment or cancellation is expected");
+        }
+
+        System.out.println("Count pending booking : "
+                + bookingRepository.countAllByStatusAndUserId(Booking.Status.PENDING, userId));
+    }
+
+    private Accommodation getAccommodationById(Long id) {
+        return accommodationRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found accommodation by id: " + id));
+    }
+
+    private List<AmenitiesResponseDto> getAllAmenitiesDto(Set<Amenities> amenitiesList) {
+        return amenitiesList.stream()
+                .map(amenities -> amenitiesRepository.findById(amenities.getId())
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Can't found amenities by id: " + amenities.getId()))
+                )
+                .map(amenitiesMapper::toDto)
+                .toList();
+    }
+
+    private Address getAddressById(Long id) {
+        return addressRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found address by id: " + id));
+    }
+
+    private Booking getBookingById(Long id) {
+        return bookingRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't found booking by id: " + id));
+    }
+
+    private void checkedAccommodationAvailability(Accommodation accommodation) {
+        List<Booking.Status> statuses = List.of(Booking.Status.CONFIRMED, Booking.Status.PENDING);
+        Long count = bookingRepository.countAllByAccommodationIdAndStatuses(
+                accommodation.getId(), statuses).orElse(ZERO);
+        if (accommodation.getAvailability()
+                < count) {
+            throw new RuntimeException("Not availability accommodation");
+        }
+
+        System.out.println("Count availability: "
+                + bookingRepository.countAllByAccommodationIdAndStatuses(
+                accommodation.getId(), statuses));
+    }
+
+    private boolean unchangedAccommodation(Accommodation accommodation, Booking booking) {
+        return booking.getAccommodation().getId().equals(accommodation.getId());
     }
 }

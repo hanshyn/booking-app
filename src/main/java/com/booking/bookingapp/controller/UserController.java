@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserResponseDto userInfo(Authentication authentication) {
+    public UserResponseDto getUser(Authentication authentication) {
         return userService.getUser(authentication);
     }
 

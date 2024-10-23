@@ -1,13 +1,14 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-tgId-to-users-table
+      id: add-colum-tgId-to-users-table
       author: hanshyn
       changes:
-        - addColumn:  
+        - addColumn:
             tableName: users
             columns:
               - column:
-                  name: telegram_id;
-                  type: varchar(255);
+                  name: telegram_id
+                  type: bigint;
                   constraints:
+                    nullable: true
                     unique: true

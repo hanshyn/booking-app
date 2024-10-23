@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,10 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AmenitiesController {
     private final AmenitiesService amenitiesService;
 
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    private AmenitiesResponseDto create(
-            @RequestBody @Valid CreateAmenitiesRequestDto requestDto) {
+    public AmenitiesResponseDto create(@RequestBody @Valid
+                                           CreateAmenitiesRequestDto requestDto) {
         return amenitiesService.save(requestDto);
     }
 
@@ -41,12 +43,14 @@ public class AmenitiesController {
         return amenitiesService.getById(id);
     }
 
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @PutMapping("/{id}")
     public AmenitiesResponseDto updateById(@RequestBody @Valid CreateAmenitiesRequestDto requestDto,
                                            @PathVariable Long id) {
         return amenitiesService.updateById(requestDto, id);
     }
 
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
