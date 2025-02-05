@@ -5,6 +5,13 @@ import com.booking.bookingapp.dto.booking.BookingResponseDto;
 import com.booking.bookingapp.dto.booking.BookingSearchParameters;
 import com.booking.bookingapp.dto.booking.UpdateBookingRequestDto;
 import com.booking.bookingapp.service.booking.BookingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,50 +29,110 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Tag(name = "Bookings", description = "Endpoints for managing bookings")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/bookings")
 public class BookingController {
     private final BookingService bookingService;
 
+    @Operation(summary = "Create a new booking",
+            description = "Creates a new booking with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Booking created successfully",
+                    content = @Content(
+                            schema = @Schema(implementation = BookingResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid booking request data")
+    })
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'})")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public BookingResponseDto create(@RequestBody @Valid BookingRequestDto requestDto,
-                                     UriComponentsBuilder uriBuilder) {
+    public BookingResponseDto create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Booking request details", required = true,
+                    content = @Content(schema = @Schema(implementation = BookingRequestDto.class)))
+            @RequestBody @Valid BookingRequestDto requestDto, UriComponentsBuilder uriBuilder) {
         return bookingService.save(requestDto, uriBuilder);
     }
 
+    @Operation(summary = "Search bookings",
+            description = "Searches bookings based on the provided search parameters")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bookings retrieved successfully"),
+            @ApiResponse(responseCode = "403",
+                    description = "Access forbidden for unauthorized users")
+    })
     @PreAuthorize("hasAnyRole('MANAGER', 'ROLE_ADMIN')")
     @GetMapping()
-    public List<BookingResponseDto> search(BookingSearchParameters searchParameters,
-                                           Pageable pageable) {
+    public List<BookingResponseDto> search(
+            @Parameter(description = "Search parameters for booking", required = false)
+            BookingSearchParameters searchParameters, Pageable pageable) {
         return bookingService.search(searchParameters, pageable);
     }
 
+    @Operation(summary = "Get bookings for the current user",
+            description = "Retrieves a list of bookings for the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bookings retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/my")
     public List<BookingResponseDto> getByUser(Pageable pageable) {
         return bookingService.getByUser(pageable);
     }
 
+    @Operation(summary = "Get booking by ID",
+            description = "Retrieves details of a specific booking by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Booking details retrieved successfully",
+                    content = @Content(
+                            schema = @Schema(implementation = BookingResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Booking not found")
+    })
     @GetMapping("/{id}")
-    public BookingResponseDto getById(@PathVariable Long id) {
+    public BookingResponseDto getById(
+            @Parameter(description = "ID of the booking to retrieve", required = true)
+            @PathVariable Long id) {
         return bookingService.getById(id);
     }
 
+    @Operation(summary = "Update booking by ID",
+            description = "Updates details of a specific booking by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Booking updated successfully",
+                    content = @Content(
+                            schema = @Schema(implementation = BookingResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid booking update data"),
+            @ApiResponse(responseCode = "404", description = "Booking not found")
+    })
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'})")
     @PutMapping("/{id}")
-    public BookingResponseDto updateById(@PathVariable Long id,
-                                         @RequestBody @Valid UpdateBookingRequestDto requestDto,
-                                         UriComponentsBuilder uriBuilder) {
+    public BookingResponseDto updateById(
+            @Parameter(description = "ID of the booking to update", required = true)
+            @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Updated booking details", required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = UpdateBookingRequestDto.class)))
+            @RequestBody @Valid UpdateBookingRequestDto requestDto,
+            UriComponentsBuilder uriBuilder) {
         return bookingService.updateById(id, requestDto, uriBuilder);
     }
 
+    @Operation(summary = "Delete booking by ID",
+            description = "Deletes a specific booking by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Booking deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Booking not found")
+    })
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'})")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(
+            @Parameter(description = "ID of the booking to delete", required = true)
+            @PathVariable Long id) {
         bookingService.deleteById(id);
     }
 }

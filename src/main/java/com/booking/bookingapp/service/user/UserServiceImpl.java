@@ -2,6 +2,7 @@ package com.booking.bookingapp.service.user;
 
 import static com.booking.bookingapp.model.Role.RoleName.ADMIN;
 
+import com.booking.bookingapp.dto.user.RoleResponseDto;
 import com.booking.bookingapp.dto.user.UserRegistrationRequestDto;
 import com.booking.bookingapp.dto.user.UserResponseDto;
 import com.booking.bookingapp.dto.user.UserUpdateRequestDto;
@@ -14,8 +15,8 @@ import com.booking.bookingapp.model.Role;
 import com.booking.bookingapp.model.User;
 import com.booking.bookingapp.repository.user.RoleRepository;
 import com.booking.bookingapp.repository.user.UserRepository;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.Authentication;
@@ -42,52 +43,43 @@ public class UserServiceImpl implements UserService {
         }
 
         Role role = roleRepository.findById(requestDto.roleId()).orElseThrow(
-                () -> new EntityNotFoundException("Can't found role by id" + requestDto.roleId())
+                () -> new EntityNotFoundException("Can't found role by id: " + requestDto.roleId())
         );
-
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(role);
 
         User user = new User();
         user.setEmail(requestDto.email());
         user.setFirstName(requestDto.firstName());
         user.setLastName(requestDto.lastName());
         user.setPassword(passwordEncoder.encode(requestDto.password()));
-        user.setRole(roleSet);
+        user.setRole(Set.of(role));
 
         userRepository.save(user);
 
-        UserResponseDto userResponseDto = userMapper.toDto(user);
-        userResponseDto.role().add(roleMapper.toDto(role));
+        Set<RoleResponseDto> roleResponseDtos = user.getRole().stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toSet());
 
-        return userResponseDto;
+        return userMapper.toDto(user, roleResponseDtos);
     }
 
     @Override
     public UserResponseDto updateRole(Long id, UserUpdateRoleRequestDto requestDto) {
-        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't found user by id: " + id)
-        );
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Role role = roleRepository.findById(requestDto.roleId()).orElseThrow(
                 () -> new EntityNotFoundException("Can't found role by id: " + requestDto.roleId())
         );
 
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(role);
-
         if ((ADMIN != role.getRole())) {
-            user.setRole(roleSet);
+            user.setRole(Set.of(role));
             userRepository.save(user);
-            System.out.println("OK!");
         }
 
-        UserResponseDto userResponseDto = userMapper.toDto(user);
-        userResponseDto.role().add(roleMapper.toDto(role));
+        Set<RoleResponseDto> roleResponseDtos = user.getRole().stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toSet());
 
-        return userResponseDto;
+        return userMapper.toDto(user, roleResponseDtos);
     }
 
     @Override
@@ -103,11 +95,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(UserUpdateRequestDto requestDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        user = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new EntityNotFoundException("Can't found user")
-        );
-
         user.setFirstName(requestDto.firstName());
         user.setLastName(requestDto.lastName());
 

@@ -11,6 +11,8 @@ import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
 import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import com.booking.bookingapp.service.notification.NotificationService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +30,9 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final AddressRepository addressRepository;
     private final AmenitiesRepository amenitiesRepository;
     private final NotificationService notificationService;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     @Transactional
     @Override
@@ -83,6 +88,8 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     private Accommodation getAccommodationById(Long id) {
+        entityManager.flush();
+        entityManager.clear();
         return accommodationRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't found accommodation by id: " + id));
     }

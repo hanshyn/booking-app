@@ -42,6 +42,11 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  constraints:
+                    nullable: false
         - insert:
             tableName: bookings
             columns:
@@ -50,3 +55,4 @@ databaseChangeLog:
               - column: {name: accommodation_id, value: "1"}
               - column: {name: user_id, value: "1"}
               - column: {name: status, value: "PENDING"}
+              - column: {name: version, value: "0"}

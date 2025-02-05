@@ -9,3 +9,11 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
+                  constraints:
+                    nullable: false
+        - update:
+            tableName: bookings
+            columns:
+              - column:
+                  name: version
+                  value: "0"

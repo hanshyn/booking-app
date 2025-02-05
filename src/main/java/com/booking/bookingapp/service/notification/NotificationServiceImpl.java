@@ -3,6 +3,7 @@ package com.booking.bookingapp.service.notification;
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
 import com.booking.bookingapp.dto.payment.PaymentSuccessDto;
+import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.model.Role.RoleName;
 import com.booking.bookingapp.model.User;
@@ -38,6 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
     private static final String AMOUNT_TOTAL = "Amount total: ";
     private static final String PATH_ACCOMMODATION = "booking/accommodations";
     private static final String PATH_BOOKINGS = "booking/bookings";
+    private static final String EXPIRED_BOOKING = "No expired bookings today!";
 
     private final TelegramBotBookingApp telegramBotBookingApp;
     private final UserRepository userRepository;
@@ -65,6 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void canceledBooking(Long telegramId, BookingResponseDto responseDto,
                                 UriComponentsBuilder urlBuilder, Booking.Status status) {
         List<User> users = userRepository.findAllByRole_Role(RoleName.ADMIN);
+
         for (User user : users) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildBookingNotificationText(responseDto),
@@ -102,12 +105,14 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyAboutPayment(PaymentSuccessDto paymentSuccessDto) {
         List<User> users = userRepository.findAllByRole_Role(RoleName.ADMIN);
 
-        UriComponentsBuilder urlBuild = UriComponentsBuilder.fromUriString(url);
-
         for (User user : users) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildPaymentNotification(paymentSuccessDto),
-                    buildUrl(urlBuild, PATH_BOOKINGS, paymentSuccessDto.bookingId()));
+                    buildUrl(
+                            UriComponentsBuilder.fromUriString(url),
+                            PATH_BOOKINGS,
+                            paymentSuccessDto.bookingId())
+            );
         }
     }
 
@@ -116,8 +121,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<User> users = userRepository.findAllByRole_Role(RoleName.ADMIN);
 
         for (User user : users) {
-            telegramBotBookingApp.sendNotification(user.getTelegramId(),
-                    "No expired bookings today!");
+            telegramBotBookingApp.sendNotification(user.getTelegramId(), EXPIRED_BOOKING);
         }
     }
 
@@ -161,15 +165,16 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String buildUrl(UriComponentsBuilder builder, String path, Long id) {
         return builder
-                //.scheme("http://localhost:8080/")
-                //.host("booking.com")//plug for localhost tg error with localhost
                 .pathSegment(path, id.toString())
                 .buildAndExpand(id)
                 .toUriString();
     }
 
     private String buildPaymentNotification(PaymentSuccessDto payment) {
-        Booking booking = bookingRepository.findById(payment.bookingId()).orElseThrow();
+        Booking booking
+                = bookingRepository.findById(payment.bookingId()).orElseThrow(
+                        () -> new EntityNotFoundException("Can't found booking by id: "
+                                + payment.bookingId()));
         return PAYMENT_STATUS + payment.paymentStatus() + SEPARATION
                 + AMOUNT_TOTAL + payment.amount() + SEPARATION
                 + buildBookingNotificationText(booking);

@@ -1,15 +1,14 @@
 package com.booking.bookingapp.telegram;
 
-import com.booking.bookingapp.telegram.bot.BotState;
-import com.booking.bookingapp.telegram.menu.Menu;
-import com.booking.bookingapp.telegram.user.UserState;
+import com.booking.bookingapp.telegram.handler.CommandHandler;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -18,15 +17,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RequiredArgsConstructor
 @Component
 public class TelegramBotBookingApp extends TelegramLongPollingBot {
-    private static final String START = "/start";
-    /*private static final String HELP = "Help";
-    private static final String INFO = "Info";
-    private static final String REGISTRATION = "Registration";*/
     private static final String INLINE_BUTTON_DETAILS = "Details";
 
-    private final UserState userState;
+    private final Map<Long, UserSession> sessions = new HashMap<>();
     private final BotStateContext botStateContext;
-    private final Menu menu;
 
     @Value("${bot.name}")
     private String botName;
@@ -34,50 +28,27 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
     @Value("${bot.token}")
     private String botToken;
 
-    @Value("${button.help}")
-    private String buttonHelp;
-
-    @Value("${button.info}")
-    private String buttonInfo;
-
-    @Value("${button.register}")
-    private String buttonRegister;
-
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = new Message();
+        Long userId = update.getMessage().getFrom().getId();
+        UserSession session = sessions.computeIfAbsent(userId, id -> new UserSession());
 
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            message = update.getMessage();
-            if (userState.getUserState(message.getChatId()).equals(BotState.REGISTRATION)
-                    && message.hasText()) {
-                SendMessage messageSend = botStateContext.processHandler(
-                        userState.getUserState(message.getChatId()), message);
+        System.out.println("userId: " + userId);
+        System.out.println("inputText: " + update.getMessage().getText());
+        System.out.println("sessions: " + sessions.get(userId));
+        System.out.println("session: " + session.getState());
 
-                sendMassage(messageSend);
+        BotState newState = botStateContext.getOrKeepCurrentState(update.getMessage().getText(),
+                session.getState());
 
-                userState.setUserState(message.getChatId(), BotState.START);
-                return;
-            }
+        session.setState(newState);
 
-            if (message.getText().startsWith(START)) {
-                userState.setUserState(message.getChatId(), BotState.START);
-            }
+        CommandHandler handler = botStateContext.getHandler(newState);
+        SendMessage message = handler.handle(update, session);
+        System.out.println("session: " + session.getState());
 
-            if (message.getText().startsWith(buttonHelp)) {
-                userState.setUserState(message.getChatId(), BotState.HELP);
-            }
-
-            if (message.getText().startsWith(buttonInfo)) {
-                userState.setUserState(message.getChatId(), BotState.INFO);
-            }
-
-            if (message.getText().startsWith(buttonRegister)) {
-                userState.setUserState(message.getChatId(), BotState.REGISTRATION);
-            }
-        }
         try {
-            execute(getResponseMessage(message));
+            execute(message);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
@@ -135,24 +106,5 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public SendMessage getResponseMessage(Message message) {
-        if (message.getText().equals(buttonHelp)) {
-            return menu.helpMenu(message);
-        } else if (message.getText().equals(buttonInfo)) {
-            return menu.infoMenu(message);
-        } else if (message.getText().equals(buttonRegister)) {
-            return menu.registrationMenu(message);
-        } else {
-            return menu.greetingMessage(message);
-        }
-
-        /*return switch (message.getText()) {
-            case buttonHelp -> menu.helpMenu(message);
-            case buttonInfo -> menu.infoMenu(message);
-            case buttonRegister -> menu.registrationMenu(message);
-            default -> menu.greetingMessage(message);
-        };*/
     }
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +46,10 @@ public class Payment {
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;

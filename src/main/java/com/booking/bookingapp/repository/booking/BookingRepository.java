@@ -3,7 +3,6 @@ package com.booking.bookingapp.repository.booking;
 import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.model.User;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

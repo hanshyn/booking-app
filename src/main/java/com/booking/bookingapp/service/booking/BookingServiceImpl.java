@@ -169,14 +169,12 @@ public class BookingServiceImpl implements BookingService {
             notificationService.notifyNoExpiredBookings();
         } else {
             bookings.forEach(booking -> {
-                UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(url);
-
                 booking.setStatus(Booking.Status.EXPIRED);
                 bookingRepository.save(booking);
 
                 notificationService.releasedAccommodation(
                         accommodationMapper.toDto(booking.getAccommodation()),
-                        uriComponentsBuilder);
+                        UriComponentsBuilder.fromUriString(url));
             });
         }
     }
