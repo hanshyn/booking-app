@@ -174,12 +174,6 @@ class AccommodationServiceTest {
                 () -> accommodationService.save(accommodationRequestDto, uriBuilder));
         assertEquals("Can't find amenities by id:" + INVALID_ID, exception.getMessage());
     }
-    /*private Set<Amenities> getAmenitiesByIds(List<Long> amenitiesIds) {
-        return amenitiesIds.stream()
-                .map(amenitiesId -> amenitiesRepository.findById(amenitiesId).orElseThrow(
-                        () -> new EntityNotFoundException("Can't find amenities by id:"
-                                + amenitiesId))).collect(Collectors.toSet());
-    }*/
 
     @Test
     @DisplayName("Update accommodation by valid id")

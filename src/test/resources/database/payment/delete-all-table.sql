@@ -1,0 +1,9 @@
+DELETE FROM accommodation_amenities;
+DELETE FROM payments;
+DELETE FROM bookings;
+DELETE FROM accommodation;
+DELETE FROM amenities;
+DELETE FROM addresses;
+DELETE FROM user_role;
+DELETE FROM users;
+DELETE FROM roles;

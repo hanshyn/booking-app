@@ -34,17 +34,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long>,
     Page<Booking> findAll(@NonNull Specification<Booking> specification,
                           @NonNull Pageable pageable);
 
-    //List<Booking> findBookingByUserId(Long id);
-
     @EntityGraph(attributePaths = {"accommodation", "user", "status", "accommodation.location",
             "accommodation.amenities"})
     List<Booking> findBookingsByUser(User user, Pageable pageable);
-
-    //List<Booking> findBookingsByUser(User user);
-
-    //List<Booking> findAllByAccommodation_Id(Long id);
-
-    //Long countAllByAccommodation_IdAndStatusIn(Long id, Collection<Booking.Status> status);
 
     @Query(value = "SELECT count(booking.accommodation.id) from Booking booking "
             + "where booking.accommodation.id = :accommodationId "

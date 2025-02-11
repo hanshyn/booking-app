@@ -1,6 +1,5 @@
 package com.booking.bookingapp.repository.payment;
 
-import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.model.Payment;
 import java.util.Collection;
 import java.util.List;
@@ -18,34 +17,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findBySessionId(String sessionId);
 
-    @Query(value = "SELECT payment FROM Payment payment JOIN payment.booking booking "
-            + "where booking.user.id = :user_id and booking.status in (:statuses)")
-    Payment findBy_UserId_AndStatusBooking(
-            @Param("user_id") Long id,
-            @Param("statuses") List<Booking.Status> statuses);
-
-    @Query(value = "SELECT count(payment.id) from Payment payment "
-            + "JOIN payment.booking booking where  booking.user.id = :user_id "
-            + "and payment.status in (:statuses)"
-            + "group by payment.id"
-    )
-    Long countAllByUserIdAndPaymentStatuses(
-            @Param("user_id") Long id,
-            @Param("statuses") List<Payment.PaymentStatuses> statuses
-    );
-
-    /*
-    @Query(value = "SELECT count(booking.accommodation.id) from Booking booking "
-            + "where booking.accommodation.id = :accommodationId "
-            + "and booking.status in (:statuses)"
-            + "group by booking.accommodation.id"
-    )
-    Optional<Long> countAllByAccommodationIdAndStatuses(
-            @Param("accommodationId") Long id,
-            @Param("statuses") List<Booking.Status> statuses
-    );
-    * */
-
     @Query(
             value = "SELECT payment from Payment payment JOIN payment.booking booking"
                     + " JOIN booking.user user where user.id = :user_id"
@@ -54,24 +25,4 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("user_id") Long id, Pageable pageable);
 
     boolean existsByBookingId_Id(Long bookingId);
-
-    /*
-    ELECT bsh FROM Bookshelf bsh "
-          + "LEFT JOIN bsh.books b "
-          + "WHERE b.author = :authorName"
-
-
-    SELECT payments FROM payments join public.bookings b on b.booking_id = payments.booking_id
-         where payment_status = 'PENDING' and status = 'PENDING' and user_id = 1
-
-         @Query(value = "SELECT count(booking.accommodation.id) from Booking booking "
-            + "where booking.accommodation.id = :accommodationId "
-            + "and booking.status in (:statuses)"
-            + "group by booking.accommodation.id"
-    )
-    Long countAllByAccommodationIdAndStatuses (
-            @Param("accommodationId") Long id,
-            @Param("statuses") List<Booking.Status> statuses
-    );
-    */
 }
