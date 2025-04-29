@@ -49,7 +49,7 @@ class SubscribeUserTest {
         message = mock(Message.class);
 
         when(update.getMessage()).thenReturn(message);
-        when(update.getMessage().toString()).thenReturn(VALID_EMAIL);
+        when(update.getMessage().getText()).thenReturn(VALID_EMAIL);
         when(message.getChatId()).thenReturn(TELEGRAM_ID);
         lenient().when(update.getMessage().getChatId()).thenReturn(TELEGRAM_ID);
     }

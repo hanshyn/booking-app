@@ -179,7 +179,7 @@ class BookingServiceTest {
 
     @Test
     void save_ValidDateBooking_ReturnBookingResponseDto() {
-        BookingResponseDto actual = bookingService.save(bookingRequestDto, uriBuilder);
+        BookingResponseDto actual = bookingService.save(bookingRequestDto, uriBuilder, user);
 
         verify(bookingRepository, times(1))
                 .save(booking);
@@ -195,7 +195,7 @@ class BookingServiceTest {
                 .thenReturn(Optional.of(1L));
 
         BookingException exception = assertThrows(BookingException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder));
+                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
 
         assertEquals("Payment or cancellation is expected", exception.getMessage());
     }
@@ -207,7 +207,7 @@ class BookingServiceTest {
         when(amenitiesRepository.findById(amenities.getId())).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder));
+                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
 
         assertEquals("Can't found amenities by id: " + INVALID_ID, exception.getMessage());
     }
@@ -219,7 +219,7 @@ class BookingServiceTest {
                 .thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder));
+                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
 
         assertEquals("Can't found accommodation by id: " + INVALID_ID, exception.getMessage());
     }
@@ -232,7 +232,7 @@ class BookingServiceTest {
         when(addressRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder));
+                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
         assertEquals("Can't found address by id: " + INVALID_ID, exception.getMessage());
     }
 
@@ -246,7 +246,7 @@ class BookingServiceTest {
                 statuses)).thenReturn(Optional.of(1L));
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder));
+                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
         assertEquals("Not availability accommodation", exception.getMessage());
         verify(bookingRepository, times(1))
                 .countAllByAccommodationIdAndStatuses(accommodation.getId(), statuses);
@@ -303,24 +303,25 @@ class BookingServiceTest {
 
     @Test
     void getById_ValidBookingId_ReturnBookingResponseDto() {
-        when(bookingRepository.findById(VALID_ID)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByIdAndUser(VALID_ID, user)).thenReturn(Optional.of(booking));
 
         BookingResponseDto actual = bookingService.getById(VALID_ID);
 
         assertNotNull(actual);
         assertEquals(bookingResponseDto, actual);
 
-        verify(bookingRepository, times(1)).findById(VALID_ID);
+        verify(bookingRepository, times(1)).findByIdAndUser(VALID_ID, user);
         verify(bookingMapper, times(1)).toDto(booking);
     }
 
     @Test
     void getById_InvalidBookingId_NotOk() {
-        when(bookingRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
+        when(bookingRepository.findByIdAndUser(INVALID_ID, user)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> bookingService.getById(INVALID_ID));
 
-        verify(bookingRepository, times(1)).findById(INVALID_ID);
+        verify(bookingRepository, times(1))
+                .findByIdAndUser(INVALID_ID, user);
         verifyNoInteractions(bookingMapper);
     }
 
@@ -336,7 +337,7 @@ class BookingServiceTest {
         updateAccommodation.setId(VALID_ID);
         updateAccommodation.setAvailability(AVAILABILITY);
 
-        when(bookingRepository.findById(VALID_ID)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByIdAndUser(VALID_ID, user)).thenReturn(Optional.of(booking));
         when(accommodationRepository.findById(VALID_ID))
                 .thenReturn(Optional.of(updateAccommodation));
 
@@ -348,7 +349,7 @@ class BookingServiceTest {
         assertNotNull(actual);
         assertEquals(bookingResponseDto, actual);
 
-        verify(bookingRepository, times(1)).findById(VALID_ID);
+        verify(bookingRepository, times(1)).findByIdAndUser(VALID_ID, user);
         verify(accommodationRepository, times(1)).findById(VALID_ID);
         verify(bookingMapper, times(1)).toDto(booking);
         verify(bookingRepository, times(1)).save(booking);
@@ -367,7 +368,7 @@ class BookingServiceTest {
         newAccommodation.setId(VALID_ID + VALID_ID);
         newAccommodation.setAvailability(AVAILABILITY);
 
-        when(bookingRepository.findById(VALID_ID)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByIdAndUser(VALID_ID, user)).thenReturn(Optional.of(booking));
         when(accommodationRepository.findById(updateBookingRequestDto.getAccommodationId()))
                 .thenReturn(Optional.of(newAccommodation));
 
@@ -379,7 +380,7 @@ class BookingServiceTest {
         assertNotNull(actual);
         assertEquals(bookingResponseDto, actual);
 
-        verify(bookingRepository, times(1)).findById(VALID_ID);
+        verify(bookingRepository, times(1)).findByIdAndUser(VALID_ID, user);
         verify(accommodationRepository, times(1))
                 .findById(updateBookingRequestDto.getAccommodationId());
         verify(notificationService, times(1))
@@ -392,7 +393,7 @@ class BookingServiceTest {
         updateBookingRequestDto.setStatus(Booking.Status.CANCELED);
         updateBookingRequestDto.setAccommodationId(VALID_ID);
 
-        when(bookingRepository.findById(VALID_ID)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByIdAndUser(VALID_ID, user)).thenReturn(Optional.of(booking));
         when(accommodationRepository.findById(VALID_ID)).thenReturn(Optional.of(accommodation));
 
         bookingResponseDto.setStatus(Booking.Status.CANCELED);
@@ -403,7 +404,7 @@ class BookingServiceTest {
         assertNotNull(actual);
         assertEquals(bookingResponseDto, actual);
 
-        verify(bookingRepository, times(1)).findById(VALID_ID);
+        verify(bookingRepository, times(1)).findByIdAndUser(VALID_ID, user);
         verify(bookingMapper, times(1)).toDto(booking);
         verify(notificationService, times(1)).canceledBooking(
                 user.getTelegramId(),

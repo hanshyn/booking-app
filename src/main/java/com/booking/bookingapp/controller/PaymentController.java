@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Payments",
         description = "Endpoints for managing payments and handling Stripe webhooks")
 @RequiredArgsConstructor
@@ -66,7 +68,7 @@ public class PaymentController {
                     description = "List of payments retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access forbidden for non-admin users")
     })
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER'})")
     @GetMapping() List<PaymentResponseDto> getByUserId(
             @Parameter(description = "User ID to fetch payments for", required = true)
             @RequestParam("user_id") Long id, Pageable pageable) {
@@ -80,7 +82,7 @@ public class PaymentController {
                     description = "Payment history retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
-    //@PreAuthorize("hasRole('ROLE_USER')")
+
     @GetMapping("/my")
     public List<PaymentResponseDto> getHistoryPayment(Pageable pageable) {
         return paymentService.getHistoryPayment(pageable);
@@ -93,7 +95,7 @@ public class PaymentController {
                     description = "Payment details retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Payment not found")
     })
-    //@PreAuthorize("hasRole('ROLE_USER')")
+
     @GetMapping("/my/{id}")
     public PaymentResponseDto getById(
             @Parameter(description = "ID of the payment to retrieve", required = true)

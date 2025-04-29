@@ -19,7 +19,8 @@ public class SubscribeUser implements UserService {
 
     @Override
     public String userService(Update update) {
-        return userRepository.findByEmail(update.getMessage().toString())
+        System.out.printf("User messsage received: %s\n", update.getMessage().getText());
+        return userRepository.findByEmail(update.getMessage().getText())
                 .map(user -> {
                     user.setTelegramId(update.getMessage().getChatId());
                     userRepository.save(user);

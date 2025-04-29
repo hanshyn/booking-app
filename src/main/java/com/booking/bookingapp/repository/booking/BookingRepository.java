@@ -23,6 +23,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long>,
     @NonNull
     Optional<Booking> findById(@NonNull Long id);
 
+    @EntityGraph(attributePaths = {"accommodation", "status", "accommodation.location",
+            "accommodation.amenities"})
+    @NonNull
+    Optional<Booking> findByIdAndUser(@NonNull Long id, @NonNull User user);
+
     @EntityGraph(attributePaths = {"accommodation", "user", "status", "accommodation.location",
             "accommodation.amenities"})
     @NonNull

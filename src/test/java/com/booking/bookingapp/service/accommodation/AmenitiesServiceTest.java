@@ -10,7 +10,9 @@ import com.booking.bookingapp.dto.accommodation.CreateAmenitiesRequestDto;
 import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.mapper.AmenitiesMapper;
 import com.booking.bookingapp.model.Amenities;
+import com.booking.bookingapp.repository.accommodation.AccommodationRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +42,9 @@ class AmenitiesServiceTest {
 
     @Mock
     private AmenitiesRepository amenitiesRepository;
+
+    @Mock
+    private AccommodationRepository accommodationRepository;
 
     @InjectMocks
     private AmenitiesServiceImpl amenitiesService;
@@ -148,7 +153,11 @@ class AmenitiesServiceTest {
     @Test
     @DisplayName("Should delete amenities by valid ID by calling deleteById once in the repository")
     void deleteById_ValidAmenitiesId() {
+        when(accommodationRepository.findAccommodationByAmenities_Id(VALID_ID))
+                .thenReturn(new HashSet<>());
+
         amenitiesService.deleteById(VALID_ID);
+
         verify(amenitiesRepository, times(1)).deleteById(VALID_ID);
     }
 

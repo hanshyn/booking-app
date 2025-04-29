@@ -20,10 +20,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 
 @Getter
 @Setter
 @Entity
+@SQLDelete(sql = "UPDATE accommodation SET is_active = false WHERE accommodation_id = ?")
 @Table(name = "accommodation")
 public class Accommodation {
     @Id
@@ -55,6 +57,9 @@ public class Accommodation {
 
     @Column(nullable = false)
     private int availability;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
     public enum Types {
         HOUSE,

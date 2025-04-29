@@ -29,7 +29,7 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk_booking_accommodation_id
                     references: accommodation(accommodation_id)
-                    nullable: false
+                    nullable: true
               - column:
                   name: user_id
                   type: bigint

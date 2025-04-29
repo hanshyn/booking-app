@@ -15,12 +15,10 @@ import org.springframework.test.context.jdbc.Sql;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "classpath:database/payment/add-payments-and-bookings-to-db.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:database/payment/delete-all-table.sql",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PaymentRepositoryTest {
-    private static final Long VALID_USER_ID = 1L;
+    private static final Long VALID_USER_ID = 10L;
     private static final int EXPECTED_TWO = 2;
     private static final Long INVALID_USER_ID = 100L;
     private static final int PAGE_NUMBER = 0;
@@ -46,12 +44,4 @@ public class PaymentRepositoryTest {
 
         Assertions.assertTrue(actual.isEmpty());
     }
-
-    /*
-    * @Query(
-            value = "SELECT payment from Payment payment JOIN payment.booking booking"
-                    + " JOIN booking.user user where user.id = :user_id"
-    )
-    Page<Payment> findAllBy_UserId(
-            @Param("user_id") Long id, Pageable pageable);*/
 }

@@ -57,6 +57,7 @@ public class AccommodationServiceImpl implements AccommodationService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public AccommodationResponseDto getById(Long id) {
         return accommodationMapper.toDto(getAccommodationById(id));
@@ -77,6 +78,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationMapper.toDto(accommodationRepository.save(accommodation));
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         accommodationRepository.deleteById(id);

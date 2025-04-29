@@ -22,7 +22,6 @@ import com.booking.bookingapp.repository.accommodation.AddressRepository;
 import com.booking.bookingapp.repository.accommodation.AmenitiesRepository;
 import com.booking.bookingapp.repository.booking.BookingRepository;
 import com.booking.bookingapp.repository.booking.BookingSpecificationBuilder;
-import com.booking.bookingapp.repository.user.UserRepository;
 import com.booking.bookingapp.service.notification.NotificationService;
 import java.time.LocalDate;
 import java.util.List;
@@ -45,7 +44,6 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingMapper bookingMapper;
     private final BookingRepository bookingRepository;
-    private final UserRepository userRepository;
     private final AccommodationRepository accommodationRepository;
     private final AccommodationMapper accommodationMapper;
     private final AddressRepository addressRepository;
@@ -60,8 +58,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingResponseDto save(BookingRequestDto requestDto, UriComponentsBuilder uri) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public BookingResponseDto save(BookingRequestDto requestDto,
+                                   UriComponentsBuilder uri, User user) {
         checkPendingPaymentBooking(user.getId());
 
         Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
@@ -107,7 +105,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto getById(Long id) {
-        return bookingMapper.toDto(getBookingById(id));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return bookingMapper.toDto(getBookingById(id, user));
     }
 
     @Transactional
@@ -116,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
                                          UriComponentsBuilder uriBuilder) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Booking booking = getBookingById(id);
+        Booking booking = getBookingById(id, user);
         booking.setCheckInDate(requestDto.getCheckInDate());
         booking.setCheckOutDate(requestDto.getCheckOutDate());
         booking.setStatus(requestDto.getStatus());
@@ -209,8 +208,8 @@ public class BookingServiceImpl implements BookingService {
                 () -> new EntityNotFoundException("Can't found address by id: " + id));
     }
 
-    private Booking getBookingById(Long id) {
-        return bookingRepository.findById(id).orElseThrow(
+    private Booking getBookingById(Long id,User user) {
+        return bookingRepository.findByIdAndUser(id, user).orElseThrow(
                 () -> new EntityNotFoundException("Can't found booking by id: " + id));
     }
 

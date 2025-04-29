@@ -23,3 +23,5 @@ databaseChangeLog:
       file: db/changelog/changes/11-create-payments-table.yaml
   - include:
       file: db/changelog/changes/12-add-colum-is-deleted-to-booking-and payment-table.yaml
+  - include:
+      file: db/changelog/changes/14-add-column-is-active-to-accommodation-table.yaml
