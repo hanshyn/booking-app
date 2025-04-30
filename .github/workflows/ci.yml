@@ -1,6 +1,6 @@
 name: Java CI
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
@@ -15,4 +15,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_NAME: ${{ secrets.TELEGRAM_BOT_NAME }}
+          STRIPE_SECRET_API_KEY: ${{ secrets.STRIPE_SECRET_API_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: mvn --batch-mode --update-snapshots verify
