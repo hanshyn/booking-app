@@ -4,8 +4,8 @@ import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.validation.EnumNamePattern;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class UpdateBookingRequestDto {
     private LocalDate checkOutDate;
 
     @NotNull
-    @Min(value = 1, message = "AccommodationId should be greater than 1")
+    @Positive(message = "AccommodationId should be greater than 1")
     private Long accommodationId;
 
     @EnumNamePattern(regexp = "PENDING|CONFIRMED|PAID|CANCELED|EXPIRED",

@@ -2,9 +2,9 @@ package com.booking.bookingapp.dto.accommodation;
 
 import com.booking.bookingapp.model.Accommodation;
 import com.booking.bookingapp.validation.EnumNamePattern;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class CreateAccommodationRequestDto {
     private Accommodation.Types type;
 
     @NotNull
-    @Min(value = 1)
+    @Positive
     private Long addressId;
 
     @NotBlank
@@ -31,10 +31,9 @@ public class CreateAccommodationRequestDto {
     private List<Long> amenitiesId;
 
     @NotNull
-    @Min(value = 1)
+    @Positive
     private BigDecimal dailyRate;
 
-    @NotNull
-    @Min(value = 1)
+    @Positive
     private int availability;
 }
