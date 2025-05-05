@@ -1,0 +1,26 @@
+# Example configuration file for booking-app
+# Copy this to 'application.properties' and fill in your real secrets
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/booking_app
+spring.datasource.username=your_user_name_db
+spring.datasource.password=your_password_db
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+server.servlet.context-path=/booking
+
+jwt.expiration=300000
+jwt.secret=your_jwt_secret_here
+
+stripe.apikey=sk_test_your_apikey_stripe
+stripe.webhook.secret=your_stripe_webhook
+
+bot.token=your_telegram_token
+bot.name=your_boot_name
+
+site.url=https://your_url_site
+
+spring.docker.compose.enabled=false
