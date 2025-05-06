@@ -18,13 +18,13 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @Entity
 @SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE booking_id = ?")
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 @Table(name = "bookings")
 public class Booking {
     @Id
