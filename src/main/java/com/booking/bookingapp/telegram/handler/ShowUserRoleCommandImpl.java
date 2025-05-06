@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
 @Component
-public class HowUserRoleHandlerImpl implements CommandHandler {
+public class ShowUserRoleCommandImpl implements CommandHandler {
     private final UserRole userRole;
 
     @Value("${reply.your_role}")

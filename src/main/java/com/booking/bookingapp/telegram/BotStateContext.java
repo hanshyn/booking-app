@@ -7,9 +7,9 @@ import static com.booking.bookingapp.telegram.BotState.SHOW_USER_INFO;
 import static com.booking.bookingapp.telegram.BotState.SUBSCRIBE;
 
 import com.booking.bookingapp.telegram.handler.CommandHandler;
-import com.booking.bookingapp.telegram.handler.HowUserRoleHandlerImpl;
 import com.booking.bookingapp.telegram.handler.MainManuHandler;
 import com.booking.bookingapp.telegram.handler.ShowBotInfoHandler;
+import com.booking.bookingapp.telegram.handler.ShowUserRoleCommandImpl;
 import com.booking.bookingapp.telegram.handler.SubscribeHandler;
 import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class BotStateContext {
     private final MainManuHandler mainManuHandler;
     private final ShowBotInfoHandler showBotInfoHandler;
     private final SubscribeHandler subscribeHandler;
-    private final HowUserRoleHandlerImpl howUserRoleHandler;
+    private final ShowUserRoleCommandImpl howUserRoleHandler;
     private final Map<BotState, CommandHandler> handlers = new HashMap<>();
     private final Map<String, BotState> commandToStateMap = new HashMap<>();
 
