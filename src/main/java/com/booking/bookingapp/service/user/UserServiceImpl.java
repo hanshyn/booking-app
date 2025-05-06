@@ -18,7 +18,6 @@ import com.booking.bookingapp.repository.user.UserRepository;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,9 +34,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleMapper roleMapper;
 
-    @SneakyThrows
     @Override
-    public UserResponseDto register(UserRegistrationRequestDto requestDto) {
+    public UserResponseDto register(UserRegistrationRequestDto requestDto)
+            throws RegistrationException {
         if (userRepository.findByEmail(requestDto.email()).isPresent()) {
             throw new RegistrationException("Can't register user, the email address exists DB");
         }

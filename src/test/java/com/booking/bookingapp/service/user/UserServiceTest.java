@@ -113,7 +113,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Should registration user successfully")
-    void register_ValidEmail_ReturnUserResponseDto() {
+    void register_ValidEmail_ReturnUserResponseDto() throws RegistrationException {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
         when(roleRepository.findById(userRegistrationRequestDto.roleId()))
                 .thenReturn(Optional.of(role));

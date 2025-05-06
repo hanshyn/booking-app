@@ -8,7 +8,6 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,7 +24,6 @@ public class StripeServiceImpl implements StripeService {
     @Value("${site.url}")
     private String url;
 
-    @SneakyThrows
     @Override
     public Session createPaymentSession(UriComponentsBuilder uriBuilder, Booking booking) {
         try {
