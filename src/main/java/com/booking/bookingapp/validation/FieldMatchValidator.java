@@ -2,6 +2,7 @@ package com.booking.bookingapp.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.Objects;
 import org.springframework.beans.BeanWrapperImpl;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
@@ -19,10 +20,6 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
         Object fieldValueObj = new BeanWrapperImpl(value).getPropertyValue(field);
         Object fieldMatchValueObj = new BeanWrapperImpl(value).getPropertyValue(fieldMatch);
 
-        if (fieldValueObj != null) {
-            return fieldValueObj.equals(fieldMatchValueObj);
-        } else {
-            return fieldMatchValueObj == null;
-        }
+        return Objects.equals(fieldValueObj, fieldMatchValueObj);
     }
 }
