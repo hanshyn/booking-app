@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class AccommodationResponseDto {
     private Long id;
-    private Accommodation.Types type;
+    private Accommodation.Type type;
     private AddressResponseDto location;
     private String size;
     private List<AmenitiesResponseDto> amenities;

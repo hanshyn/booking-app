@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    List<Payment> findByBookingIdAndStatusIn(Long id, Collection<Payment.PaymentStatuses> status);
+    List<Payment> findByBookingIdAndStatusIn(Long id, Collection<Payment.PaymentStatus> status);
 
     Optional<Payment> findBySessionId(String sessionId);
 

@@ -35,7 +35,7 @@ public class Accommodation {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Types type;
+    private Type type;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
@@ -61,7 +61,7 @@ public class Accommodation {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    public enum Types {
+    public enum Type {
         HOUSE,
         APARTMENT,
         CONDO,

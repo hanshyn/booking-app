@@ -75,7 +75,7 @@ class NotificationServiceTest {
         accommodationResponseDto = new AccommodationResponseDto();
         accommodationResponseDto.setId(VALID_ID);
         accommodationResponseDto.setLocation(new AddressResponseDto());
-        accommodationResponseDto.setType(Accommodation.Types.APARTMENT);
+        accommodationResponseDto.setType(Accommodation.Type.APARTMENT);
 
         bookingResponseDto.setAccommodation(accommodationResponseDto);
 

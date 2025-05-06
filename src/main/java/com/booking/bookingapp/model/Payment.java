@@ -32,7 +32,7 @@ public class Payment {
 
     @Column(name = "payment_status", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private PaymentStatuses status;
+    private PaymentStatus status;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
@@ -54,7 +54,7 @@ public class Payment {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    public enum PaymentStatuses {
+    public enum PaymentStatus {
         PENDING,
         PAID,
         FAILED,

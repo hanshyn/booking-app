@@ -154,7 +154,7 @@ public class AccommodationControllerTest {
     private CreateAccommodationRequestDto defaultedAccommodationRequestDto() {
         CreateAccommodationRequestDto requestDto = new CreateAccommodationRequestDto();
         requestDto.setAddressId(ADDRESS_ID);
-        requestDto.setType(Accommodation.Types.HOUSE);
+        requestDto.setType(Accommodation.Type.HOUSE);
         requestDto.setAmenitiesId(List.of());
         requestDto.setAvailability(AVAILABILITY);
         requestDto.setDailyRate(DALY_RATE);
@@ -178,7 +178,7 @@ public class AccommodationControllerTest {
     private AccommodationResponseDto defaultedAccommodationResponseDto() {
         AccommodationResponseDto responseDto = new AccommodationResponseDto();
         responseDto.setId(ACCOMMODATION_ID);
-        responseDto.setType(Accommodation.Types.HOUSE);
+        responseDto.setType(Accommodation.Type.HOUSE);
         responseDto.setAmenities(List.of());
         responseDto.setLocation(new AddressResponseDto());
         responseDto.setAvailability(AVAILABILITY);

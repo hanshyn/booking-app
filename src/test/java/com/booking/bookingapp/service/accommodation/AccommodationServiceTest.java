@@ -80,7 +80,7 @@ class AccommodationServiceTest {
         accommodation.setId(VALID_ID);
         accommodation.setLocation(address);
         accommodation.setAmenities(Set.of(amenities));
-        accommodation.setType(Accommodation.Types.APARTMENT);
+        accommodation.setType(Accommodation.Type.APARTMENT);
 
         accommodationResponseDto = new AccommodationResponseDto();
         accommodationResponseDto.setId(VALID_ID);
@@ -88,7 +88,7 @@ class AccommodationServiceTest {
         accommodationRequestDto = new CreateAccommodationRequestDto();
         accommodationRequestDto.setAddressId(VALID_ID);
         accommodationRequestDto.setAmenitiesId(List.of(VALID_ID));
-        accommodationRequestDto.setType(Accommodation.Types.APARTMENT);
+        accommodationRequestDto.setType(Accommodation.Type.APARTMENT);
 
         uriBuilder = UriComponentsBuilder.newInstance();
 

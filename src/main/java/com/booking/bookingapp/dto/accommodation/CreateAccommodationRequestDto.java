@@ -18,7 +18,7 @@ public class CreateAccommodationRequestDto {
             message = "Type should be HOUSE, APARTMENT, CONDO, VACATION_HOME, HOTEL, HOSTEL, "
                     + "MOTEL, LUXURY_TENT or VILLA"
     )
-    private Accommodation.Types type;
+    private Accommodation.Type type;
 
     @NotNull
     @Positive

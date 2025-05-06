@@ -1,6 +1,6 @@
 package com.booking.bookingapp.controller;
 
-import static com.booking.bookingapp.model.Accommodation.Types.HOUSE;
+import static com.booking.bookingapp.model.Accommodation.Type.HOUSE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;

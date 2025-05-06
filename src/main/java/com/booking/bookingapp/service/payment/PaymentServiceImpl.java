@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             if (session.getStatus().equals(SESSION_COMPLETE)) {
                 Payment payment = getPaymentBySessionID(session.getId());
-                payment.setStatus(Payment.PaymentStatuses.PAID);
+                payment.setStatus(Payment.PaymentStatus.PAID);
                 paymentRepository.save(payment);
 
                 Booking booking = getBookingById(payment.getBooking().getId());
@@ -90,7 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentCancelDto handlerCansel(String sessionId) {
         Payment payment = getPaymentBySessionID(sessionId);
-        payment.setStatus(Payment.PaymentStatuses.CANCELED);
+        payment.setStatus(Payment.PaymentStatus.CANCELED);
         paymentRepository.save(payment);
 
         return new PaymentCancelDto(payment.getSessionUrl(), MESSAGE_CANCEL);
@@ -105,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (SESSION_EXPIRED.equals(session.getStatus())) {
             Payment payment = getPaymentBySessionID(session.getId());
-            payment.setStatus(Payment.PaymentStatuses.EXPIRED);
+            payment.setStatus(Payment.PaymentStatus.EXPIRED);
             paymentRepository.save(payment);
 
             System.out.println("Session Expired : " + SESSION_EXPIRED);
@@ -156,16 +156,16 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setSessionId(session.getId());
         payment.setAmount(BigDecimal.valueOf(Double.valueOf(session.getAmountTotal())
                 * CENT_TO_DOLLAR_CONVERSION_FACTOR));
-        payment.setStatus(Payment.PaymentStatuses.PENDING);
+        payment.setStatus(Payment.PaymentStatus.PENDING);
 
         return payment;
     }
 
     private void checkPaymentByBooking(Booking booking) {
-        List<Payment.PaymentStatuses> statuses = List.of(Payment.PaymentStatuses.PENDING,
-                Payment.PaymentStatuses.PAID,
-                Payment.PaymentStatuses.CANCELED,
-                Payment.PaymentStatuses.FAILED);
+        List<Payment.PaymentStatus> statuses = List.of(Payment.PaymentStatus.PENDING,
+                Payment.PaymentStatus.PAID,
+                Payment.PaymentStatus.CANCELED,
+                Payment.PaymentStatus.FAILED);
 
         if (!paymentRepository.findByBookingIdAndStatusIn(booking.getId(), statuses).isEmpty()) {
             throw new PaymentException("Payment already exists not completed");
