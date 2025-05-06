@@ -48,7 +48,7 @@ public class Payment {
     private BigDecimal amount;
 
     @Version
-    @Column(name = "version", nullable = false)
+    @Column(nullable = false)
     private Long version;
 
     @Column(name = "is_deleted", nullable = false)

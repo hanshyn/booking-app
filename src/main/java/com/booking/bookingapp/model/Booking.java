@@ -56,7 +56,7 @@ public class Booking {
     private Payment payment;
 
     @Version
-    @Column(name = "version", nullable = false)
+    @Column(nullable = false)
     private Long version;
 
     public enum Status {
