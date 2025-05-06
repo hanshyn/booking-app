@@ -51,11 +51,11 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(requestDto.firstName());
         user.setLastName(requestDto.lastName());
         user.setPassword(passwordEncoder.encode(requestDto.password()));
-        user.setRole(Set.of(role));
+        user.setRoles(Set.of(role));
 
         userRepository.save(user);
 
-        Set<RoleResponseDto> roleResponseDtos = user.getRole().stream()
+        Set<RoleResponseDto> roleResponseDtos = user.getRoles().stream()
                 .map(roleMapper::toDto)
                 .collect(Collectors.toSet());
 
@@ -71,11 +71,11 @@ public class UserServiceImpl implements UserService {
         );
 
         if ((ADMIN != role.getRole())) {
-            user.setRole(Set.of(role));
+            user.setRoles(Set.of(role));
             userRepository.save(user);
         }
 
-        Set<RoleResponseDto> roleResponseDtos = user.getRole().stream()
+        Set<RoleResponseDto> roleResponseDtos = user.getRoles().stream()
                 .map(roleMapper::toDto)
                 .collect(Collectors.toSet());
 

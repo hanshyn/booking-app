@@ -30,7 +30,7 @@ databaseChangeLog:
                   valueComputed: (SELECT user_id FROM users WHERE email='admin@gmail.com')
               - column:
                   name: role_id
-                  valueComputed: (SELECT role_id FROM roles WHERE role='ADMIN')
+                  valueComputed: (SELECT role_id FROM roles WHERE roles='ADMIN')
         - insert:
             tableName: user_role
             columns:
@@ -39,4 +39,4 @@ databaseChangeLog:
                   valueComputed: (SELECT user_id FROM users WHERE email='user@gmail.com')
               - column:
                   name: role_id
-                  valueComputed: (SELECT role_id FROM roles WHERE role='USER')
+                  valueComputed: (SELECT role_id FROM roles WHERE roles='USER')

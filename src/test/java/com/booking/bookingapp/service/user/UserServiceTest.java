@@ -108,7 +108,7 @@ class UserServiceTest {
         user.setFirstName(userRegistrationRequestDto.firstName());
         user.setLastName(userRegistrationRequestDto.lastName());
         user.setPassword(ENCODED_PASSWORD);
-        user.setRole(Set.of(role));
+        user.setRoles(Set.of(role));
     }
 
     @Test
@@ -134,7 +134,7 @@ class UserServiceTest {
         assertEquals(userRegistrationRequestDto.firstName(), capturedUser.getFirstName());
         assertEquals(userRegistrationRequestDto.lastName(), capturedUser.getLastName());
         assertEquals(ENCODED_PASSWORD, capturedUser.getPassword());
-        assertTrue(capturedUser.getRole().contains(role));
+        assertTrue(capturedUser.getRoles().contains(role));
     }
 
     @Test
@@ -169,7 +169,7 @@ class UserServiceTest {
         managerRole.setId(VALID_ROLE_MANAGER_ID);
         managerRole.setRole(MANAGER);
 
-        userManager.setRole(new HashSet<>());
+        userManager.setRoles(new HashSet<>());
 
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
@@ -228,7 +228,7 @@ class UserServiceTest {
     @DisplayName("Should skip update if role is ADMIN")
     void updateRole_RoleIsAdmin_NotOk() {
         User userAdmin = new User();
-        userAdmin.setRole(new HashSet<>());
+        userAdmin.setRoles(new HashSet<>());
 
         Role adminRole = new Role();
         adminRole.setId(VALID_ROLE_ADMIN_ID);
@@ -297,7 +297,7 @@ class UserServiceTest {
         updateUser.setEmail(EMAIL);
         updateUser.setFirstName(UPDATE_FIRST_NAME);
         updateUser.setLastName(UPDATE_LAST_NAME);
-        updateUser.setRole(Set.of());
+        updateUser.setRoles(Set.of());
 
         UserResponseDto updateResponseDto = new UserResponseDto(
                 VALID_USER_ID,
@@ -308,7 +308,7 @@ class UserServiceTest {
         );
 
         when(userRepository.save(any(User.class))).thenReturn(updateUser);
-        when(userMapper.toDto(updateUser)).thenReturn(updateResponseDto);
+        when(userMapper.toDto(any(User.class))).thenReturn(updateResponseDto);;
 
         UserUpdateRequestDto updateRequestDto = new UserUpdateRequestDto(
                 UPDATE_FIRST_NAME,
@@ -318,7 +318,7 @@ class UserServiceTest {
         UserResponseDto actual = userService.updateUser(updateRequestDto);
 
         verify(userRepository, times(1)).save(any(User.class));
-        verify(userMapper).toDto(updateUser);
+        verify(userMapper).toDto(any(User.class));
 
         assertEquals(updateResponseDto, actual);
     }

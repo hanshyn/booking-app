@@ -17,7 +17,7 @@ public class UserRole implements UserService {
     @Override
     public String userService(Update update) {
         return userRepository.findUserByTelegramId(update.getMessage().getChatId())
-                .map(user -> user.getRole().iterator().next().getRole().toString())
+                .map(user -> user.getRoles().iterator().next().getRole().toString())
                 .orElse(roleNotFound);
     }
 }

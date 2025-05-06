@@ -26,7 +26,7 @@ public class BotServiceImpl implements BotService {
         if (userRepository.findUserByTelegramId(userTgId).isPresent()) {
             return userRepository.findUserByTelegramId(userTgId)
                     .get()
-                    .getRole()
+                    .getRoles()
                     .iterator()
                     .next();
         }

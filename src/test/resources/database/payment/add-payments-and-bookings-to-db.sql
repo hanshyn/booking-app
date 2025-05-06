@@ -1,7 +1,7 @@
 INSERT INTO users (user_id, email, first_name, last_name, password, telegram_id)
 VALUES (10,'admin@gmail.com','admin','admin','$2a$10$nlvpUzuDGQ/Iu2ethysvLec1.Dj6YxJeaqcAeDtTodfqqT7uUcgja', 370695211);
 
-INSERT INTO roles (role_id, role)
+INSERT INTO roles (role_id, roles)
 VALUES (1, 'ADMIN');
 
 INSERT INTO user_role (user_id, role_id)

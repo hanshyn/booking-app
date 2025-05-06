@@ -35,3 +35,12 @@ databaseChangeLog:
             tableName: roles
             columns:
               - column: { name: role, value: "CUSTOMER" }
+  - changeSet:
+      id: rename-role-column-to-roles-in-roles-table
+      author: hanshyn
+      changes:
+        - renameColumn:
+            tableName: roles
+            oldColumnName: role
+            newColumnName: roles
+            columnDataType: varchar(255)

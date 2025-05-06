@@ -12,12 +12,14 @@ import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
@@ -43,14 +45,14 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> role = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
 
     @Column(name = "telegram_id", unique = true)
     private Long telegramId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role;
+        return roles;
     }
 
     @Override

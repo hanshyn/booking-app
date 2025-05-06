@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @EntityGraph(attributePaths = "role")
+    @EntityGraph(attributePaths = "roles")
     Optional<User> findByEmail(String email);
 
-    @EntityGraph(attributePaths = "role")
+    @EntityGraph(attributePaths = "roles")
     Optional<User> findUserByTelegramId(Long tgId);
 
-    @EntityGraph(attributePaths = "role")
-    List<User> findAllByRole_Role(Role.RoleName role);
+    @EntityGraph(attributePaths = "roles")
+    List<User> findAllByRoles_Role(Role.RoleName roleName);
 }

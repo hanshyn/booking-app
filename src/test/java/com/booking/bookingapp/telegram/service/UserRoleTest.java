@@ -52,7 +52,7 @@ class UserRoleTest {
         role.setRole(ADMIN);
 
         when(role.getRole()).thenReturn(Role.RoleName.ADMIN);
-        when(user.getRole()).thenReturn(Set.of(role));
+        when(user.getRoles()).thenReturn(Set.of(role));
         when(userRepository.findUserByTelegramId(CHAT_ID)).thenReturn(Optional.of(user));
 
         String actual = userRole.userService(update);

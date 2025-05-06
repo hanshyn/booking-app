@@ -125,7 +125,7 @@ class BookingServiceTest {
 
         user = new User();
         user.setId(VALID_ID);
-        user.setRole(Set.of(adminRole));
+        user.setRoles(Set.of(adminRole));
 
         amenities = new Amenities();
         amenities.setId(VALID_ID);

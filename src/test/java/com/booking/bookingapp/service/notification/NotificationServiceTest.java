@@ -94,7 +94,8 @@ class NotificationServiceTest {
                 bookingResponseDto.getId(),
                 STATUS_PAYMENT, BigDecimal.valueOf(10L));
 
-        when(userRepository.findAllByRole_Role(Role.RoleName.ADMIN)).thenReturn(List.of(adminUser));
+        when(userRepository.findAllByRoles_Role(Role.RoleName.ADMIN))
+                .thenReturn(List.of(adminUser));
     }
 
     @Test
