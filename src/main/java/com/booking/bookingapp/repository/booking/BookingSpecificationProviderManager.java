@@ -1,5 +1,6 @@
 package com.booking.bookingapp.repository.booking;
 
+import com.booking.bookingapp.exception.BookingException;
 import com.booking.bookingapp.model.Booking;
 import com.booking.bookingapp.repository.SpecificationProvider;
 import com.booking.bookingapp.repository.SpecificationProviderManager;
@@ -17,7 +18,7 @@ public class BookingSpecificationProviderManager implements SpecificationProvide
         return bookingSpecificationProvider.stream()
                 .filter(provider -> provider.getKey().equals(key))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new BookingException(
                         "Can't find correct specification provider for key: " + key
                         )
                 );

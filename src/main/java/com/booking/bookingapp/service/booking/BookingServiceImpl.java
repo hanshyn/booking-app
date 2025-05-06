@@ -219,7 +219,7 @@ public class BookingServiceImpl implements BookingService {
                 accommodation.getId(), statuses).orElse(ZERO);
         if (accommodation.getAvailability()
                 < count) {
-            throw new RuntimeException("Not availability accommodation");
+            throw new BookingException("Not availability accommodation");
         }
 
         System.out.println("Count availability: "

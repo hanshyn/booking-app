@@ -1,5 +1,6 @@
 package com.booking.bookingapp.telegram;
 
+import com.booking.bookingapp.exception.TelegramBotException;
 import com.booking.bookingapp.telegram.handler.CommandHandler;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,7 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(e.getMessage());
         }
     }
 
@@ -85,7 +86,7 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
                     .replyMarkup(markup)
                     .build());
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(e.getMessage());
         }
     }
 
@@ -96,7 +97,7 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
                     .text(text)
                     .build());
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(e.getMessage());
         }
     }
 
@@ -104,7 +105,7 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(e.getMessage());
         }
     }
 }

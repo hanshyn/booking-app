@@ -56,6 +56,12 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler({TelegramBotException.class})
+    public ResponseEntity<Object> handlerBookingException(TelegramBotException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
+
     private String getErrorMessage(ObjectError e) {
         if (e instanceof FieldError fieldError) {
             String field = fieldError.getField();

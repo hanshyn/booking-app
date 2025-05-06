@@ -5,6 +5,7 @@ import com.booking.bookingapp.dto.payment.PaymentRequestDto;
 import com.booking.bookingapp.dto.payment.PaymentResponseDto;
 import com.booking.bookingapp.dto.payment.PaymentSuccessDto;
 import com.booking.bookingapp.exception.EntityNotFoundException;
+import com.booking.bookingapp.exception.PaymentException;
 import com.booking.bookingapp.service.payment.PaymentService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -125,7 +126,7 @@ public class PaymentController {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             paymentService.checkedExpiredSession(event);
         } catch (SignatureVerificationException e) {
-            throw new RuntimeException(e);
+            throw new PaymentException(e.getMessage());
         }
     }
 

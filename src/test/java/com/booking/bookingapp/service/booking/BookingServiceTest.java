@@ -245,7 +245,7 @@ class BookingServiceTest {
         when(bookingRepository.countAllByAccommodationIdAndStatuses(accommodation.getId(),
                 statuses)).thenReturn(Optional.of(1L));
 
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        BookingException exception = assertThrows(BookingException.class,
                 () -> bookingService.save(bookingRequestDto, uriBuilder, user));
         assertEquals("Not availability accommodation", exception.getMessage());
         verify(bookingRepository, times(1))

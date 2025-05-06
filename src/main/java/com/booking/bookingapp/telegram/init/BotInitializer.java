@@ -1,5 +1,6 @@
 package com.booking.bookingapp.telegram.init;
 
+import com.booking.bookingapp.exception.TelegramBotException;
 import com.booking.bookingapp.telegram.TelegramBotBookingApp;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -22,7 +23,7 @@ public class BotInitializer {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(telegramBotBookingApp);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(e.getMessage());
         }
     }
 }
