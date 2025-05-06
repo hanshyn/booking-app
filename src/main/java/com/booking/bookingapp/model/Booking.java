@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,7 +52,7 @@ public class Booking {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "booking", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Payment payment;
 
     @Version

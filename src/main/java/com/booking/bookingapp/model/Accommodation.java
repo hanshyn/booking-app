@@ -37,7 +37,7 @@ public class Accommodation {
     @Enumerated(EnumType.STRING)
     private Types type;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
     private Address location;
 
@@ -46,7 +46,7 @@ public class Accommodation {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "accommodation_amenities",
             joinColumns = @JoinColumn(name = "accommodation_id"),
             inverseJoinColumns = @JoinColumn(name = "amenities_id"))
@@ -55,7 +55,7 @@ public class Accommodation {
     @Column(name = "daily_rate", nullable = false)
     private BigDecimal dailyRate;
 
-    @Column(nullable = false)
+    @Column
     private int availability;
 
     @Column(name = "is_active", nullable = false)
