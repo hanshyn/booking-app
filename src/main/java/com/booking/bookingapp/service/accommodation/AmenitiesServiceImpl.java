@@ -48,8 +48,8 @@ public class AmenitiesServiceImpl implements AmenitiesService {
     @Override
     public AmenitiesResponseDto updateById(CreateAmenitiesRequestDto requestDto, Long id) {
         Amenities amenities = getAmenitiesById(id);
-        amenities.setName(requestDto.getName());
-        amenities.setDescription(requestDto.getDescription());
+
+        amenitiesMapper.updateFromDto(requestDto, amenities);
 
         return amenitiesMapper.toDto(amenitiesRepository.save(amenities));
     }

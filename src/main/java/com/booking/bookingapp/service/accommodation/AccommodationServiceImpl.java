@@ -68,12 +68,10 @@ public class AccommodationServiceImpl implements AccommodationService {
     public AccommodationResponseDto updateById(CreateAccommodationRequestDto requestDto, Long id) {
         Accommodation accommodation = getAccommodationById(id);
 
-        accommodation.setType(requestDto.getType());
+        accommodationMapper.updateFromDto(requestDto, accommodation);
+
         accommodation.setLocation(getAddressById(requestDto.getAddressId()));
-        accommodation.setSize(requestDto.getSize());
         accommodation.setAmenities(getAmenitiesByIds(requestDto.getAmenitiesId()));
-        accommodation.setDailyRate(requestDto.getDailyRate());
-        accommodation.setAvailability(requestDto.getAvailability());
 
         return accommodationMapper.toDto(accommodationRepository.save(accommodation));
     }

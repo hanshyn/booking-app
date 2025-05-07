@@ -114,13 +114,20 @@ class UserServiceTest {
     @Test
     @DisplayName("Should registration user successfully")
     void register_ValidEmail_ReturnUserResponseDto() throws RegistrationException {
+        User userRegister = new User();
+        userRegister.setId(VALID_USER_ID);
+        userRegister.setEmail(EMAIL);
+        userRegister.setFirstName(FIRST_NAME);
+        userRegister.setLastName(LAST_NAME);
+        userRegister.setPassword(ENCODED_PASSWORD);
+
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
         when(roleRepository.findById(userRegistrationRequestDto.roleId()))
                 .thenReturn(Optional.of(role));
-        when(passwordEncoder.encode(userRegistrationRequestDto.password()))
-                .thenReturn(ENCODED_PASSWORD);
+        when(userMapper.toModel(userRegistrationRequestDto, passwordEncoder))
+                .thenReturn(userRegister);
 
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(userRegister);
         when(roleMapper.toDto(any(Role.class))).thenReturn(roleDto);
         when(userMapper.toDto(any(User.class), anySet())).thenReturn(userResponseDto);
 

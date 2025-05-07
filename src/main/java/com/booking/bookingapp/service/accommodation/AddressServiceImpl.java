@@ -44,11 +44,8 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressResponseDto updateById(CreateAddressRequestDto requestDto, Long id) {
         Address address = getAddressById(id);
-        address.setCountry(requestDto.getCountry());
-        address.setCity(requestDto.getCity());
-        address.setStreet(requestDto.getStreet());
-        address.setNumberBuild(requestDto.getNumberBuild());
-        address.setPostcode(requestDto.getPostcode());
+
+        addressMapper.updateFromDto(requestDto, address);
 
         return addressMapper.toDto(addressRepository.save(address));
     }

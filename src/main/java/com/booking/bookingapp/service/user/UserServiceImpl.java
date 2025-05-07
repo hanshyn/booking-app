@@ -45,11 +45,8 @@ public class UserServiceImpl implements UserService {
                 () -> new EntityNotFoundException("Can't found role by id: " + requestDto.roleId())
         );
 
-        User user = new User();
-        user.setEmail(requestDto.email());
-        user.setFirstName(requestDto.firstName());
-        user.setLastName(requestDto.lastName());
-        user.setPassword(passwordEncoder.encode(requestDto.password()));
+        User user = userMapper.toModel(requestDto, passwordEncoder);
+        //user.setPassword(passwordEncoder.encode(requestDto.password()));
         user.setRoles(Set.of(role));
 
         userRepository.save(user);
@@ -94,8 +91,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(UserUpdateRequestDto requestDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        user.setFirstName(requestDto.firstName());
-        user.setLastName(requestDto.lastName());
+
+        userMapper.updateFromDto(requestDto, user);
 
         userRepository.save(user);
 

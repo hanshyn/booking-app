@@ -116,10 +116,8 @@ public class BookingServiceImpl implements BookingService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Booking booking = getBookingById(id, user);
-        booking.setCheckInDate(requestDto.getCheckInDate());
-        booking.setCheckOutDate(requestDto.getCheckOutDate());
-        booking.setStatus(requestDto.getStatus());
-        booking.setStatus(requestDto.getStatus());
+
+        bookingMapper.updateModel(requestDto, booking);
 
         Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
 
