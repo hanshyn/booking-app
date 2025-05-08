@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class AccommodationServiceImpl implements AccommodationService {
@@ -34,12 +35,10 @@ public class AccommodationServiceImpl implements AccommodationService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    @Transactional
     @Override
     public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto,
                                          UriComponentsBuilder uriBuilder) {
         Accommodation accommodation = accommodationMapper.toModel(requestDto);
-        accommodation.setType(requestDto.getType());
         accommodation.setLocation(getAddressById(requestDto.getAddressId()));
         accommodation.setAmenities(getAmenitiesByIds(requestDto.getAmenitiesId()));
 
@@ -57,13 +56,11 @@ public class AccommodationServiceImpl implements AccommodationService {
                 .toList();
     }
 
-    @Transactional
     @Override
     public AccommodationResponseDto getById(Long id) {
         return accommodationMapper.toDto(getAccommodationById(id));
     }
 
-    @Transactional
     @Override
     public AccommodationResponseDto updateById(CreateAccommodationRequestDto requestDto, Long id) {
         Accommodation accommodation = getAccommodationById(id);
@@ -76,7 +73,6 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationMapper.toDto(accommodationRepository.save(accommodation));
     }
 
-    @Transactional
     @Override
     public void deleteById(Long id) {
         accommodationRepository.deleteById(id);

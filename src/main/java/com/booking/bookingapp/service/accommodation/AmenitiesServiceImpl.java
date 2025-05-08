@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class AmenitiesServiceImpl implements AmenitiesService {
@@ -22,7 +23,6 @@ public class AmenitiesServiceImpl implements AmenitiesService {
     private final AmenitiesRepository amenitiesRepository;
     private final AccommodationRepository accommodationRepository;
 
-    @Transactional
     @Override
     public AmenitiesResponseDto save(CreateAmenitiesRequestDto requestDto) {
         return amenitiesMapper.toDto(
@@ -44,7 +44,6 @@ public class AmenitiesServiceImpl implements AmenitiesService {
         return amenitiesMapper.toDto(getAmenitiesById(id));
     }
 
-    @Transactional
     @Override
     public AmenitiesResponseDto updateById(CreateAmenitiesRequestDto requestDto, Long id) {
         Amenities amenities = getAmenitiesById(id);

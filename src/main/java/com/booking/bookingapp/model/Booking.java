@@ -17,14 +17,17 @@ import jakarta.persistence.Version;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @Entity
-@SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE booking_id = ?")
-@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE booking_id = ? AND version = ?")
+@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
 @Table(name = "bookings")
 public class Booking {
     @Id

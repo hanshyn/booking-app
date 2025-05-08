@@ -1,6 +1,5 @@
 package com.booking.bookingapp.service.booking;
 
-import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.AmenitiesResponseDto;
 import com.booking.bookingapp.dto.booking.BookingRequestDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -56,29 +56,18 @@ public class BookingServiceImpl implements BookingService {
     @Value("${site.url}")
     private String url;
 
-    @Transactional
     @Override
     public BookingResponseDto save(BookingRequestDto requestDto,
                                    UriComponentsBuilder uri, User user) {
         checkPendingPaymentBooking(user.getId());
 
         Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
-        checkedAccommodationAvailability(accommodation);
+        checkAccommodationAvailability(accommodation);
 
-        Booking booking = bookingMapper.toModel(requestDto);
-        booking.setAccommodation(accommodation);
-        booking.setUser(user);
-        booking.setStatus(Booking.Status.PENDING);
+        Booking booking = bookingMapper.toModel(requestDto, accommodation, user);
         bookingRepository.save(booking);
 
-        AccommodationResponseDto accommodationResponseDto
-                = accommodationMapper.toDto(accommodation);
-        accommodationResponseDto.setAmenities(getAllAmenitiesDto(accommodation.getAmenities()));
-        accommodationResponseDto.setLocation(addressMapper.toDto(
-                getAddressById(accommodation.getLocation().getId())));
-
         BookingResponseDto bookingResponseDto = bookingMapper.toDto(booking);
-        bookingResponseDto.setAccommodation(accommodationResponseDto);
 
         notificationService.createdBooking(bookingResponseDto, uri);
         return bookingResponseDto;
@@ -109,7 +98,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(getBookingById(id, user));
     }
 
-    @Transactional
     @Override
     public BookingResponseDto updateById(Long id, UpdateBookingRequestDto requestDto,
                                          UriComponentsBuilder uriBuilder) {
@@ -124,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
         if (unchangedAccommodation(accommodation, booking)) {
             booking.setAccommodation(accommodation);
         } else {
-            checkedAccommodationAvailability(accommodation);
+            checkAccommodationAvailability(accommodation);
 
             booking.setAccommodation(accommodation);
 
@@ -153,8 +141,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.deleteById(id);
     }
 
-    @Transactional
-    @Scheduled(cron = "0 00 13 * * *")
+    @Scheduled(cron = "0 00 12 * * *")
     protected void processExpiredBookings() {
         LocalDate tomorrow = LocalDate.now().plusDays(ONE_DAY);
         List<Booking.Status> statuses = List.of(Booking.Status.PENDING, Booking.Status.CONFIRMED);
@@ -211,7 +198,7 @@ public class BookingServiceImpl implements BookingService {
                 () -> new EntityNotFoundException("Can't found booking by id: " + id));
     }
 
-    private void checkedAccommodationAvailability(Accommodation accommodation) {
+    private void checkAccommodationAvailability(Accommodation accommodation) {
         List<Booking.Status> statuses = List.of(Booking.Status.CONFIRMED, Booking.Status.PENDING);
         Long count = bookingRepository.countAllByAccommodationIdAndStatuses(
                 accommodation.getId(), statuses).orElse(ZERO);

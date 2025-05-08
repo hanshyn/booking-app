@@ -37,8 +37,8 @@ public class NotificationServiceImpl implements NotificationService {
     private static final String BOOKING_ID = "Booking id: ";
     private static final String PAYMENT_STATUS = "Payment status: ";
     private static final String AMOUNT_TOTAL = "Amount total: ";
-    private static final String PATH_ACCOMMODATION = "booking/accommodations";
-    private static final String PATH_BOOKINGS = "booking/bookings";
+    private static final String PATH_ACCOMMODATION = "accommodations";
+    private static final String PATH_BOOKINGS = "bookings";
     private static final String EXPIRED_BOOKING = "No expired bookings today!";
 
     private final TelegramBotBookingApp telegramBotBookingApp;
@@ -76,7 +76,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Async
-    @Transactional
     @Override
     public void createdAccommodation(AccommodationResponseDto responseDto,
                                      UriComponentsBuilder urlBuilder) {

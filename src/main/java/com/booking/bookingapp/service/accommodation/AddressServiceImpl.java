@@ -12,13 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class AddressServiceImpl implements AddressService {
     private final AddressMapper addressMapper;
     private final AddressRepository addressRepository;
 
-    @Transactional
     @Override
     public AddressResponseDto save(CreateAddressRequestDto requestDto) {
         return addressMapper.toDto(
@@ -40,7 +40,6 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toDto(getAddressById(id));
     }
 
-    @Transactional
     @Override
     public AddressResponseDto updateById(CreateAddressRequestDto requestDto, Long id) {
         Address address = getAddressById(id);
