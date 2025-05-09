@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Address", description = "Endpoint for managing addresses")
 @RequiredArgsConstructor
@@ -53,6 +55,7 @@ public class AddressController {
     public AddressResponseDto create(
             @Parameter(description = "Data for creating a new address", required = true)
             @RequestBody @Valid CreateAddressRequestDto requestDto) {
+        log.info("Create address: {}", requestDto);
         return addressService.save(requestDto);
     }
 
@@ -69,6 +72,7 @@ public class AddressController {
     public List<AddressResponseDto> getAll(
             @Parameter(description = "Pagination information")
             Pageable pageable) {
+        log.debug("Get all addresses: {}", pageable);
         return addressService.getAll(pageable);
     }
 
@@ -88,6 +92,7 @@ public class AddressController {
     public AddressResponseDto getById(
             @Parameter(description = "ID of the address to retrieve", required = true)
             @PathVariable Long id) {
+        log.debug("Get address by ID: {}", id);
         return addressService.getById(id);
     }
 
@@ -109,6 +114,7 @@ public class AddressController {
              @RequestBody @Valid CreateAddressRequestDto requestDto,
              @Parameter(description = "ID of the address to update", required = true)
              @PathVariable Long id) {
+        log.info("Update address ID: {} with data: {}", id, requestDto);
         return addressService.updateById(requestDto, id);
     }
 
@@ -125,11 +131,13 @@ public class AddressController {
     public void deleteById(
             @Parameter(description = "ID of the address to delete", required = true)
             @PathVariable Long id) {
+        log.info("Delete address by ID: {}", id);
         addressService.deleteById(id);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

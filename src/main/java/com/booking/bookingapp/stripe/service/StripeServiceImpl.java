@@ -8,10 +8,12 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
 public class StripeServiceImpl implements StripeService {
     private static final String CHECKOUT_SESSION_ID = "{CHECKOUT_SESSION_ID}";
@@ -49,10 +51,12 @@ public class StripeServiceImpl implements StripeService {
 
             Session session = Session.create(params);
 
-            System.out.println("URL: " + session.getUrl());
-            System.out.println("SessionId: " + session.getId());
-            System.out.println("URL CANCEL: " + session.getCancelUrl());
-            System.out.println("URL SUCCESS: " + session.getSuccessUrl());
+            log.debug("Session_URL: {} Created session: {} URL CANCEL: {} URL SUCCESS {}",
+                    session.getUrl(),
+                    session.getId(),
+                    session.getCancelUrl(),
+                    session.getSuccessUrl()
+            );
 
             return session;
         } catch (StripeException e) {

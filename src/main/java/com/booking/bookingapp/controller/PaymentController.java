@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Payments",
         description = "Endpoints for managing payments and handling Stripe webhooks")
@@ -57,12 +59,14 @@ public class PaymentController {
                             schema = @Schema(implementation = PaymentResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid payment request data")
     })
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'})")
     @PostMapping()
     public PaymentResponseDto payment(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Payment request details", required = true,
                     content = @Content(schema = @Schema(implementation = PaymentRequestDto.class)))
             @RequestBody @Valid PaymentRequestDto requestDto, UriComponentsBuilder uriBuilder) {
+        log.info("Received request to create a payment session");
         return paymentService.payment(requestDto, uriBuilder);
     }
 
@@ -77,6 +81,7 @@ public class PaymentController {
     @GetMapping() List<PaymentResponseDto> getByUserId(
             @Parameter(description = "User ID to fetch payments for", required = true)
             @RequestParam("user_id") Long id, Pageable pageable) {
+        log.info("Received request to fetch payments for user ID {}", id);
         return paymentService.getByUserId(id, pageable);
     }
 
@@ -87,9 +92,9 @@ public class PaymentController {
                     description = "Payment history retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
-
     @GetMapping("/my")
     public List<PaymentResponseDto> getHistoryPayment(Pageable pageable) {
+        log.info("Received request to fetch history payments");
         return paymentService.getHistoryPayment(pageable);
     }
 
@@ -100,11 +105,11 @@ public class PaymentController {
                     description = "Payment details retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Payment not found")
     })
-
     @GetMapping("/my/{id}")
     public PaymentResponseDto getById(
             @Parameter(description = "ID of the payment to retrieve", required = true)
             @PathVariable Long id) {
+        log.info("Received request to fetch payment by ID {}", id);
         return paymentService.getById(id);
     }
 
@@ -120,12 +125,13 @@ public class PaymentController {
             @RequestBody String payload,
             @Parameter(description = "Stripe signature header", required = true)
             @RequestHeader("Stripe-Signature") String sigHeader) {
-        System.out.println("webhook");
+        log.info("Webhook endpoint received");
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             paymentService.checkedExpiredSession(event);
         } catch (SignatureVerificationException e) {
+            log.error("Signature Verification Exception: {}", e.getMessage());
             throw new PaymentException(e.getMessage());
         }
     }
@@ -141,6 +147,7 @@ public class PaymentController {
     public PaymentSuccessDto success(
             @Parameter(description = "Session ID of the successful payment", required = true)
             @RequestParam("session_id") String sessionId) {
+        log.info("Received request to fetch payment success");
         return paymentService.handlerSuccess(sessionId);
     }
 
@@ -156,11 +163,13 @@ public class PaymentController {
     public PaymentCancelDto cancel(
             @Parameter(description = "Session ID of the canceled payment", required = true)
             @RequestParam("session_id") String sessionId) {
+        log.info("Received request to fetch payment cancel");
         return paymentService.handlerCansel(sessionId);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found; {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Amenities", description = "Endpoint for managing amenities")
 @RequiredArgsConstructor
@@ -53,6 +55,7 @@ public class AmenitiesController {
     public AmenitiesResponseDto create(
             @Parameter(description = "Data for creating a new amenities", required = true)
             @RequestBody @Valid CreateAmenitiesRequestDto requestDto) {
+        log.info("Create amenities request: {}", requestDto);
         return amenitiesService.save(requestDto);
     }
 
@@ -69,6 +72,7 @@ public class AmenitiesController {
     public List<AmenitiesResponseDto> getAll(
             @Parameter(description = "Pagination information")
             Pageable pageable) {
+        log.debug("Get all amenities with pageable: {}", pageable);
         return amenitiesService.getAll(pageable);
     }
 
@@ -88,6 +92,7 @@ public class AmenitiesController {
     public AmenitiesResponseDto getById(
             @Parameter(description = "ID of the amenities to retrieve", required = true)
             @PathVariable Long id) {
+        log.debug("Get amenities by ID: {}", id);
         return amenitiesService.getById(id);
     }
 
@@ -109,6 +114,7 @@ public class AmenitiesController {
             @RequestBody @Valid CreateAmenitiesRequestDto requestDto,
             @Parameter(description = "ID of the amenities to retrieve", required = true)
             @PathVariable Long id) {
+        log.info("Update amenities ID: {} with data: {}", id, requestDto);
         return amenitiesService.updateById(requestDto, id);
     }
 
@@ -126,11 +132,13 @@ public class AmenitiesController {
     public void deleteById(
             @Parameter(description = "ID of the amenities to delete", required = true)
             @PathVariable Long id) {
+        log.info("Delete amenities by ID: {}", id);
         amenitiesService.deleteById(id);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

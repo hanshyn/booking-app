@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Accommodation", description = "Endpoints for managing accommodations")
 @RequiredArgsConstructor
@@ -55,6 +57,7 @@ public class AccommodationController {
             @Parameter(description = "Data for creating a new accommodation", required = true)
             @RequestBody @Valid CreateAccommodationRequestDto requestDto,
             UriComponentsBuilder urlBuilder) {
+        log.info("Creating accommodation: {}", requestDto);
         return accommodationService.save(requestDto, urlBuilder);
     }
 
@@ -71,6 +74,7 @@ public class AccommodationController {
     public List<AccommodationResponseDto> getAll(
             @Parameter(description = "Pagination information")
             Pageable pageable) {
+        log.info("Get all accommodations with pageable: {}", pageable);
         return accommodationService.getAll(pageable);
     }
 
@@ -90,6 +94,7 @@ public class AccommodationController {
     public AccommodationResponseDto getById(
             @Parameter(description = "ID of the accommodation to retrieve", required = true)
             @PathVariable Long id) {
+        log.info("Get accommodation by ID: {}", id);
         return accommodationService.getById(id);
     }
 
@@ -111,6 +116,7 @@ public class AccommodationController {
             @RequestBody @Valid CreateAccommodationRequestDto requestDto,
             @Parameter(description = "ID of the accommodation to update", required = true)
             @PathVariable Long id) {
+        log.info("Updating accommodation ID: {}, with data: {}", id,requestDto);
         return accommodationService.updateById(requestDto, id);
     }
 
@@ -127,11 +133,13 @@ public class AccommodationController {
     public void deleteById(
             @Parameter(description = "ID of the accommodation to delete", required = true)
             @PathVariable Long id) {
+        log.info("Deleting accommodation ID: {}", id);
         accommodationService.deleteById(id);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

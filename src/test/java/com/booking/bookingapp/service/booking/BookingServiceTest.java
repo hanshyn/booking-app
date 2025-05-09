@@ -173,7 +173,8 @@ class BookingServiceTest {
         lenient().when(amenitiesMapper.toDto(amenities)).thenReturn(amenitiesResponseDto);
         lenient().when(accommodationRepository.findById(bookingRequestDto.getAccommodationId()))
                 .thenReturn(Optional.of(accommodation));
-        lenient().when(bookingMapper.toModel(bookingRequestDto)).thenReturn(booking);
+        lenient().when(bookingMapper.toModel(bookingRequestDto, accommodation, user))
+                .thenReturn(booking);
         lenient().when(bookingMapper.toDto(any(Booking.class))).thenReturn(bookingResponseDto);
     }
 
@@ -201,18 +202,6 @@ class BookingServiceTest {
     }
 
     @Test
-    void getAllAmenitiesDto_AmenitiesIdInvalid_ShouldThrowException() {
-        amenities.setId(INVALID_ID);
-
-        when(amenitiesRepository.findById(amenities.getId())).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
-
-        assertEquals("Can't found amenities by id: " + INVALID_ID, exception.getMessage());
-    }
-
-    @Test
     void getAccommodationById_InvalidId_ShouldThrowException() {
         bookingRequestDto.setAccommodationId(INVALID_ID);
         when(accommodationRepository.findById(bookingRequestDto.getAccommodationId()))
@@ -222,18 +211,6 @@ class BookingServiceTest {
                 () -> bookingService.save(bookingRequestDto, uriBuilder, user));
 
         assertEquals("Can't found accommodation by id: " + INVALID_ID, exception.getMessage());
-    }
-
-    @Test
-    void getAddress_InvalidId_ShouldThrowException() {
-        address.setId(INVALID_ID);
-        accommodation.setLocation(address);
-
-        when(addressRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> bookingService.save(bookingRequestDto, uriBuilder, user));
-        assertEquals("Can't found address by id: " + INVALID_ID, exception.getMessage());
     }
 
     @Test

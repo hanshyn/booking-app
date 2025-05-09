@@ -21,12 +21,14 @@ import com.stripe.model.checkout.Session;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -100,15 +102,14 @@ public class PaymentServiceImpl implements PaymentService {
     public void checkedExpiredSession(Event event) {
         Session session = (Session) event.getDataObjectDeserializer().getObject()
                 .orElseThrow(() -> new IllegalStateException("Object deserialization error"));
-        System.out.println(event.getType());
-        System.out.println(session.getStatus());
+        log.debug("Event type: {} Session: {}, ", event.getType(), session.getId());
 
         if (SESSION_EXPIRED.equals(session.getStatus())) {
             Payment payment = getPaymentBySessionID(session.getId());
             payment.setStatus(Payment.PaymentStatus.EXPIRED);
             paymentRepository.save(payment);
 
-            System.out.println("Session Expired : " + SESSION_EXPIRED);
+            log.debug("Session Expired: {}", SESSION_EXPIRED);
         }
     }
 

@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -164,13 +166,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkPendingPaymentBooking(Long userId) {
+        log.debug("Count pending booking: {}",
+                bookingRepository.countAllByStatusAndUserId(Booking.Status.PENDING, userId));
         if (bookingRepository.countAllByStatusAndUserId(Booking.Status.PENDING, userId)
                 .orElse(ZERO) > ZERO) {
             throw new BookingException("Payment or cancellation is expected");
         }
-
-        System.out.println("Count pending booking : "
-                + bookingRepository.countAllByStatusAndUserId(Booking.Status.PENDING, userId));
     }
 
     private Accommodation getAccommodationById(Long id) {
@@ -202,14 +203,13 @@ public class BookingServiceImpl implements BookingService {
         List<Booking.Status> statuses = List.of(Booking.Status.CONFIRMED, Booking.Status.PENDING);
         Long count = bookingRepository.countAllByAccommodationIdAndStatuses(
                 accommodation.getId(), statuses).orElse(ZERO);
+
+        log.debug("Count accommodation : {}", count);
+
         if (accommodation.getAvailability()
                 < count) {
             throw new BookingException("Not availability accommodation");
         }
-
-        System.out.println("Count availability: "
-                + bookingRepository.countAllByAccommodationIdAndStatuses(
-                accommodation.getId(), statuses));
     }
 
     private boolean unchangedAccommodation(Accommodation accommodation, Booking booking) {

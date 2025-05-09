@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "User Management", description = "Endpoints for managing users")
 @RequiredArgsConstructor
@@ -55,6 +57,7 @@ public class UserController {
                     content = @Content(
                             schema = @Schema(implementation = UserUpdateRoleRequestDto.class)))
             @RequestBody @Valid UserUpdateRoleRequestDto requestDto) {
+        log.info("Update user role request: {}", requestDto);
         return userService.updateRole(id, requestDto);
     }
 
@@ -71,6 +74,7 @@ public class UserController {
     public UserResponseDto getUser(
             @Parameter(description = "Authentication object of the current user", hidden = true)
             Authentication authentication) {
+        log.info("Get current user: {}", authentication);
         return userService.getUser(authentication);
     }
 
@@ -92,11 +96,13 @@ public class UserController {
                     content = @Content(
                             schema = @Schema(implementation = UserUpdateRequestDto.class)))
             @RequestBody @Valid UserUpdateRequestDto requestDto) {
+        log.info("Update user request: {}", requestDto);
         return userService.updateUser(requestDto);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

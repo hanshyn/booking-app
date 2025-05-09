@@ -44,7 +44,7 @@ class NotificationServiceTest {
             = "www.booking.com/booking/accommodations/1";
     private static final String STATUS_PAYMENT = "PAY";
     private final UriComponentsBuilder uriBuilder
-            = UriComponentsBuilder.fromUriString("www.booking.com");
+            = UriComponentsBuilder.fromUriString("www.booking.com/booking");
 
     @Mock
     private TelegramBotBookingApp telegramBotBookingApp;

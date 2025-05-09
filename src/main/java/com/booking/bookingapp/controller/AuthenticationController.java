@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 @RequiredArgsConstructor
 @RestController
@@ -50,6 +52,7 @@ public class AuthenticationController {
                             schema = @Schema(implementation = UserRegistrationRequestDto.class)))
             @RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {
+        log.info("Registering new user with email: {}", requestDto.email());
         return userService.register(requestDto);
     }
 
@@ -69,16 +72,19 @@ public class AuthenticationController {
                     content = @Content(
                             schema = @Schema(implementation = UserLoginRequestDto.class)))
             @RequestBody @Valid UserLoginRequestDto requestDto) {
+        log.info("Login credentials for authentication: {}", requestDto.email());
         return authenticationService.authenticate(requestDto);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<String> handleRegistrationException(RegistrationException ex) {
+        log.error("Registration failed: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Bookings", description = "Endpoints for managing bookings")
 @RequiredArgsConstructor
@@ -60,6 +62,7 @@ public class BookingController {
                     content = @Content(schema = @Schema(implementation = BookingRequestDto.class)))
             @RequestBody @Valid BookingRequestDto requestDto, UriComponentsBuilder uriBuilder,
             @AuthenticationPrincipal User user) {
+        log.info("Creating new booking: {}", requestDto);
         return bookingService.save(requestDto, uriBuilder, user);
     }
 
@@ -75,6 +78,7 @@ public class BookingController {
     public List<BookingResponseDto> search(
             @Parameter(description = "Search parameters for booking", required = false)
             BookingSearchParameters searchParameters, Pageable pageable) {
+        log.info("Search bookings based on the provided search parameters: {}", searchParameters);
         return bookingService.search(searchParameters, pageable);
     }
 
@@ -87,6 +91,7 @@ public class BookingController {
     @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/my")
     public List<BookingResponseDto> getByUser(Pageable pageable) {
+        log.info("Retrieves a list of bookings for the authenticated user");
         return bookingService.getByUser(pageable);
     }
 
@@ -99,10 +104,12 @@ public class BookingController {
                             schema = @Schema(implementation = BookingResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "Booking not found")
     })
+    @PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
     public BookingResponseDto getById(
             @Parameter(description = "ID of the booking to retrieve", required = true)
             @PathVariable Long id) {
+        log.info("Retrieving booking by ID: {}", id);
         return bookingService.getById(id);
     }
 
@@ -126,6 +133,7 @@ public class BookingController {
                             schema = @Schema(implementation = UpdateBookingRequestDto.class)))
             @RequestBody @Valid UpdateBookingRequestDto requestDto,
             UriComponentsBuilder uriBuilder) {
+        log.info("Updating booking by ID: {}", id);
         return bookingService.updateById(id, requestDto, uriBuilder);
     }
 
@@ -141,11 +149,13 @@ public class BookingController {
     public void delete(
             @Parameter(description = "ID of the booking to delete", required = true)
             @PathVariable Long id) {
+        log.info("Deleting booking by ID: {}", id);
         bookingService.deleteById(id);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

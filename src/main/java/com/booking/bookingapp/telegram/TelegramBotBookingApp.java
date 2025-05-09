@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class TelegramBotBookingApp extends TelegramLongPollingBot {
@@ -34,10 +36,8 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
         Long userId = update.getMessage().getFrom().getId();
         UserSession session = sessions.computeIfAbsent(userId, id -> new UserSession());
 
-        System.out.println("userId: " + userId);
-        System.out.println("inputText: " + update.getMessage().getText());
-        System.out.println("sessions: " + sessions.get(userId));
-        System.out.println("session: " + session.getState());
+        log.debug("UserId: {} received update: {} sessions: {} session: {}",
+                userId, update, sessions.get(userId), session.getState());
 
         BotState newState = botStateContext.getOrKeepCurrentState(update.getMessage().getText(),
                 session.getState());
@@ -46,7 +46,7 @@ public class TelegramBotBookingApp extends TelegramLongPollingBot {
 
         CommandHandler handler = botStateContext.getHandler(newState);
         SendMessage message = handler.handle(update, session);
-        System.out.println("session: " + session.getState());
+        log.debug("Session: {}", session.getState());
 
         try {
             execute(message);
