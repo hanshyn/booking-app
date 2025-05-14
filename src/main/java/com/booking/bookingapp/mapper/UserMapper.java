@@ -15,12 +15,13 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, uses = {RoleMapper.class})
 public interface UserMapper {
     @Mapping(target = "password",
             expression = "java(passwordEncoder.encode(requestDto.password()))")
     User toModel(UserRegistrationRequestDto requestDto, @Context PasswordEncoder passwordEncoder);
 
+    @Mapping(source = "roles", target = "role")
     UserResponseDto toDto(User user);
 
     @Mapping(target = "role", source = "roleDtos")
