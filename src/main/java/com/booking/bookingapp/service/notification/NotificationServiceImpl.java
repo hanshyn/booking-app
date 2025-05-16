@@ -10,14 +10,17 @@ import com.booking.bookingapp.model.User;
 import com.booking.bookingapp.repository.booking.BookingRepository;
 import com.booking.bookingapp.repository.user.UserRepository;
 import com.booking.bookingapp.telegram.TelegramBotBookingApp;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -48,14 +51,17 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${site.url}")
     private String url;
 
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @Async
     @Transactional
     @Override
     public void createdBooking(BookingResponseDto responseDto,
                                UriComponentsBuilder urlBuilder) {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildBookingNotificationText(responseDto),
                     buildUrl(urlBuilder, PATH_BOOKINGS, responseDto.getId()));
@@ -66,9 +72,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void canceledBooking(Long telegramId, BookingResponseDto responseDto,
                                 UriComponentsBuilder urlBuilder, Booking.Status status) {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildBookingNotificationText(responseDto),
                     buildUrl(urlBuilder, PATH_BOOKINGS, responseDto.getId()));
@@ -79,9 +85,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void createdAccommodation(AccommodationResponseDto responseDto,
                                      UriComponentsBuilder urlBuilder) {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildAccommodationNotificationText(responseDto, CREATED),
                     buildUrl(urlBuilder, PATH_ACCOMMODATION, responseDto.getId()));
@@ -91,9 +97,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void releasedAccommodation(AccommodationResponseDto responseDto,
                                       UriComponentsBuilder urlBuilder) {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildAccommodationNotificationText(responseDto, RELEASED),
                     buildUrl(urlBuilder, PATH_ACCOMMODATION, responseDto.getId()));
@@ -102,13 +108,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notifyAboutPayment(PaymentSuccessDto paymentSuccessDto) {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildPaymentNotification(paymentSuccessDto),
                     buildUrl(
-                            UriComponentsBuilder.fromUriString(url),
+                            UriComponentsBuilder.fromUriString(url + contextPath),
                             PATH_BOOKINGS,
                             paymentSuccessDto.bookingId())
             );
@@ -117,11 +123,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notifyNoExpiredBookings() {
-        List<User> users = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> recipients = getAdminsAndManagers();
 
-        for (User user : users) {
+        for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(), EXPIRED_BOOKING);
         }
+    }
+
+    private List<User> getAdminsAndManagers() {
+        List<User> admins = userRepository.findAllByRoles_Role(RoleName.ADMIN);
+        List<User> managers = userRepository.findAllByRoles_Role(RoleName.MANAGER);
+
+        List<User> recipients = new ArrayList<>();
+        recipients.addAll(admins);
+        recipients.addAll(managers);
+        log.info("recipients users: {}", recipients);
+        return recipients;
     }
 
     private String buildAccommodationNotificationText(AccommodationResponseDto responseDto,

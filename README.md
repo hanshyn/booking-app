@@ -4,6 +4,7 @@
 
 This project is an advanced online management system for housing rentals, designed to replace antiquated, manual processes used by a local booking service. The goal is to revolutionize the housing rental experience by providing a seamless and efficient platform for both service administrators and renters. The system addresses challenges related to managing properties, renters, financial transactions, booking records, and limited payment options, aiming to simplify administrative tasks and enhance the renting experience.
 
+---
 ## ✨ Features
 The Accommodation Booking Service offers the following core functionalities:
 
@@ -68,7 +69,7 @@ The project is built using the following technologies:
 |        Telegram API        |          Interface for interacting with the Telegram messaging service           |
 ---
 
-## Endpoints
+## 	📍 Endpoints
 The application provides a RESTful API with the following main controllers and endpoints. Detailed API documentation can be found in the Swagger UI after running the application.
 
 * **Authentication Controller (`/api/auth`)**: User registration and login (`POST /register`, `POST /login`).
@@ -80,3 +81,126 @@ The application provides a RESTful API with the following main controllers and e
 *(Note: Some endpoints require authentication (JWT Bearer Token or Basic) and specific roles as indicated in the project description.)*
 
 ---
+## 🚀 Postman collections
+[Postman collections]()
+
+---
+## 💻 How to run the project locally
+### 1. Download [Java](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) and [Docker Desktop](https://www.docker.com/).
+### 2. Clone the project:
+````bash
+git clone https://github.com/hanshyn/booking-app.git
+````
+### 3.1 Add a .env file to the root folder of the cloned project and add your configuration.
+
+Example config:
+```
+POSTGRES_USER=YOUR_USER_NAME_DB
+POSTGRES_PASSWORD=YOUR_PASSWORD_DB
+POSTGRES_DATABASE=YOUR_NAME_DB
+POSTGRES_LOCAL_PORT=5434
+POSTGRES_DOCKER_PORT=5432
+
+SPRING_LOCAL_PORT=8088
+SPRING_DOCKER_PORT=8080
+DEBUG_PORT=5005
+```
+### 3.2 Add the application.properties file
+Example application.properties:
+````
+# Example configuration file for booking-app
+# Copy this to 'application.properties' and fill in your real secrets
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/booking_app
+spring.datasource.username=your_user_name_db
+spring.datasource.password=your_password_db
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+server.servlet.context-path=/booking
+
+jwt.expiration=300000
+jwt.secret=your_jwt_secret_here
+
+stripe.apikey=sk_test_your_apikey_stripe
+stripe.webhook.secret=your_stripe_webhook
+
+bot.token=your_telegram_token
+bot.name=your_boot_name
+
+site.url=https://your_url_site
+
+spring.docker.compose.enabled=false
+
+````
+
+### 4. Build the project:
+```bash
+mvn clean install
+```
+
+###  5. Build the Docker images and start the containers:
+````bash
+docker-compose up --build
+````
+---
+
+## 🌐 How to run the project in Codespaces
+### 1. Create a Codespaces on master:
+![The Codespaces](images/codespaces.png "Create a codespaces on master")
+
+### 2. Checking and Setting up Java in Codespaces:
+* verify if Java is installed in your Codespace:
+```bash
+java -version
+```
+> 💁
+> If the installed version is below 17, or if Java is not installed at all, you will need to install it
+> ```bash 
+> sudo apt update
+> sudo apt install openjdk-17-jdk 
+> ```
+> Then, check your JAVA_HOME environment variable:
+>  ```bash 
+> echo $JAVA_HOME
+> ```
+> If the path is incorrect (e.g., pointing to an older version), set the correct one. For example, if using OpenJDK 17:
+>  ```bash 
+> export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+> export PATH=$JAVA_HOME/bin:$PATH
+> ```
+
+### 3. Add a .env file to the root folder and add your configuration.
+
+Example config:
+```
+MYSQLDB_USER=root
+MYSQLDB_USER_PASSWORD=password
+MYSQLDB_USER_DATABASE=db_book_store
+MYSQLDB_USER_LOCAL_PORT=3308
+MYSQLDB_USER_DOCKER_PORT=3306
+
+SPRING_LOCAL_PORT=8088
+SPRING_DOCKER_PORT=8080
+DEBUG_PORT=5005
+```
+### 4. Build the project:
+```bash
+mvn clean install
+```
+
+### 5. Start the project on Cpdespaces:
+```bash
+docker-compose up
+```
+### 6. To access the Swagger UI for the application running in Codespaces, follow these steps:
+
+* Find the application URL: In your Codespaces environment, look for the "PORTS" tab (as shown in the screenshot you provided). Find the forwarded address for the port your application is running on (commonly 8080 or 8081, check your application's configuration if unsure). This address is the base URL for your application.
+* Copy the URL: Copy the forwarded address displayed next to the relevant port.
+* Open in browser: Open a new tab in your web browser.
+* Access Swagger UI: Paste the copied URL into the address bar.
+* Append the Swagger path: To the end of the URL, add the path `/swagger-ui/index.html.` The full address should look something like `https://your-codespace-url.github.dev/swagger-ui/index.html`
+* Go: Press Enter to navigate to the Swagger UI page. From there, you can explore and test the API endpoints.
