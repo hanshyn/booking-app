@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
@@ -55,10 +54,9 @@ public class AccommodationController {
     @PostMapping
     public AccommodationResponseDto create(
             @Parameter(description = "Data for creating a new accommodation", required = true)
-            @RequestBody @Valid CreateAccommodationRequestDto requestDto,
-            UriComponentsBuilder urlBuilder) {
+            @RequestBody @Valid CreateAccommodationRequestDto requestDto) {
         log.info("Creating accommodation: {}", requestDto);
-        return accommodationService.save(requestDto, urlBuilder);
+        return accommodationService.save(requestDto);
     }
 
     @Operation(summary = "Get all accommodations",

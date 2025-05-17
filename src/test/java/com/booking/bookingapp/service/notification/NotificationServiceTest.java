@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +45,13 @@ class NotificationServiceTest {
             = "www.booking.com/booking/accommodations/1";
     private static final String STATUS_PAYMENT = "PAY";
     private final UriComponentsBuilder uriBuilder
-            = UriComponentsBuilder.fromUriString("www.booking.com/booking");
+            = UriComponentsBuilder.fromUriString("www.booking.com");
+
+    @Value("${site.url}")
+    private String siteUrl;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @Mock
     private TelegramBotBookingApp telegramBotBookingApp;
@@ -67,7 +74,12 @@ class NotificationServiceTest {
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         Field urlField = NotificationServiceImpl.class.getDeclaredField("url");
         urlField.setAccessible(true);
-        urlField.set(notificationService, uriBuilder.toString());
+        urlField.set(notificationService, uriBuilder.build().toString());
+
+        Field contextPathField =
+                NotificationServiceImpl.class.getDeclaredField("contextPath");
+        contextPathField.setAccessible(true);
+        contextPathField.set(notificationService, "/booking");
 
         bookingResponseDto = new BookingResponseDto();
         bookingResponseDto.setId(VALID_ID);
@@ -101,7 +113,7 @@ class NotificationServiceTest {
     @Test
     @DisplayName("Send notification when a new booking is created")
     void createdBooking_SendNotification() {
-        notificationService.createdBooking(bookingResponseDto, uriBuilder);
+        notificationService.createdBooking(bookingResponseDto);
 
         verify(telegramBotBookingApp, times(1)).sendNotification(
                 eq(VALID_TELEGRAM_ID),
@@ -121,7 +133,6 @@ class NotificationServiceTest {
         notificationService.canceledBooking(
                 VALID_TELEGRAM_ID,
                 bookingResponseDto,
-                uriBuilder,
                 bookingResponseDto.getStatus()
         );
 
@@ -140,7 +151,7 @@ class NotificationServiceTest {
     @Test
     @DisplayName("Send notification when new accommodation is created")
     void createdAccommodation_SendNotification() {
-        notificationService.createdAccommodation(accommodationResponseDto, uriBuilder);
+        notificationService.createdAccommodation(accommodationResponseDto);
 
         verify(telegramBotBookingApp, times(1)).sendNotification(
                 eq(VALID_TELEGRAM_ID),
@@ -157,7 +168,7 @@ class NotificationServiceTest {
     @Test
     @DisplayName("Send notification when accommodation is released")
     void releasedAccommodation_SendNotification() {
-        notificationService.releasedAccommodation(accommodationResponseDto, uriBuilder);
+        notificationService.releasedAccommodation(accommodationResponseDto);
 
         verify(telegramBotBookingApp, times(1)).sendNotification(
                 eq(VALID_TELEGRAM_ID),

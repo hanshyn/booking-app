@@ -185,7 +185,7 @@ class BookingServiceTest {
         verify(bookingRepository, times(1))
                 .save(booking);
         verify(notificationService, times(1))
-                .createdBooking(bookingResponseDto, uriBuilder);
+                .createdBooking(bookingResponseDto);
 
         assertEquals(bookingResponseDto, actual);
     }
@@ -361,7 +361,7 @@ class BookingServiceTest {
         verify(accommodationRepository, times(1))
                 .findById(updateBookingRequestDto.getAccommodationId());
         verify(notificationService, times(1))
-                .releasedAccommodation(accommodationMapper.toDto(newAccommodation), uriBuilder);
+                .releasedAccommodation(accommodationMapper.toDto(newAccommodation));
     }
 
     @Test
@@ -386,11 +386,10 @@ class BookingServiceTest {
         verify(notificationService, times(1)).canceledBooking(
                 user.getTelegramId(),
                 bookingResponseDto,
-                uriBuilder,
                 Booking.Status.CANCELED
         );
         verify(notificationService, times(1)).releasedAccommodation(
-                bookingResponseDto.getAccommodation(), uriBuilder);
+                bookingResponseDto.getAccommodation());
     }
 
     @Test
@@ -438,8 +437,7 @@ class BookingServiceTest {
         verify(bookingRepository, times(1)).save(booking);
 
         verify(notificationService, times(1))
-                .releasedAccommodation(eq(accommodationResponseDto),
-                        any(UriComponentsBuilder.class));
+                .releasedAccommodation(eq(accommodationResponseDto));
 
         verify(notificationService, never()).notifyNoExpiredBookings();
     }

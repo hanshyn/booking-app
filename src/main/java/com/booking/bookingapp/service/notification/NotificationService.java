@@ -4,23 +4,18 @@ import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
 import com.booking.bookingapp.dto.payment.PaymentSuccessDto;
 import com.booking.bookingapp.model.Booking;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public interface NotificationService {
 
-    void createdBooking(BookingResponseDto responseDto,
-                        UriComponentsBuilder urlBuilder);
+    void createdBooking(BookingResponseDto responseDto);
 
     void canceledBooking(Long telegramId,
                          BookingResponseDto responseDto,
-                         UriComponentsBuilder urlBuilder,
                          Booking.Status status);
 
-    void createdAccommodation(AccommodationResponseDto responseDto,
-                              UriComponentsBuilder urlBuilder);
+    void createdAccommodation(AccommodationResponseDto responseDto);
 
-    void releasedAccommodation(AccommodationResponseDto responseDto,
-                               UriComponentsBuilder urlBuilder);
+    void releasedAccommodation(AccommodationResponseDto responseDto);
 
     void notifyAboutPayment(PaymentSuccessDto paymentSuccessDto);
 

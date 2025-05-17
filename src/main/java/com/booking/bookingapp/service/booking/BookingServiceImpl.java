@@ -71,7 +71,7 @@ public class BookingServiceImpl implements BookingService {
 
         BookingResponseDto bookingResponseDto = bookingMapper.toDto(booking);
 
-        notificationService.createdBooking(bookingResponseDto, uri);
+        notificationService.createdBooking(bookingResponseDto);
         return bookingResponseDto;
     }
 
@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
             booking.setAccommodation(accommodation);
 
             notificationService.releasedAccommodation(
-                    accommodationMapper.toDto(accommodation), uriBuilder);
+                    accommodationMapper.toDto(accommodation));
         }
 
         bookingRepository.save(booking);
@@ -129,10 +129,9 @@ public class BookingServiceImpl implements BookingService {
             notificationService.canceledBooking(
                     user.getTelegramId(),
                     bookingResponseDto,
-                    uriBuilder,
                     bookingResponseDto.getStatus());
             notificationService.releasedAccommodation(
-                    bookingResponseDto.getAccommodation(), uriBuilder);
+                    bookingResponseDto.getAccommodation());
         }
 
         return bookingResponseDto;
@@ -159,8 +158,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingRepository.save(booking);
 
                 notificationService.releasedAccommodation(
-                        accommodationMapper.toDto(booking.getAccommodation()),
-                        UriComponentsBuilder.fromUriString(url));
+                        accommodationMapper.toDto(booking.getAccommodation()));
             });
         }
     }

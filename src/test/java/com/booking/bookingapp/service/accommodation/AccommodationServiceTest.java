@@ -33,7 +33,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class AccommodationServiceTest {
@@ -66,7 +65,6 @@ class AccommodationServiceTest {
     private Amenities amenities;
     private AccommodationResponseDto accommodationResponseDto;
     private CreateAccommodationRequestDto accommodationRequestDto;
-    private UriComponentsBuilder uriBuilder;
 
     @BeforeEach
     void setUp() {
@@ -90,8 +88,6 @@ class AccommodationServiceTest {
         accommodationRequestDto.setAmenitiesId(List.of(VALID_ID));
         accommodationRequestDto.setType(Accommodation.Type.APARTMENT);
 
-        uriBuilder = UriComponentsBuilder.newInstance();
-
         lenient().when(addressRepository.findById(VALID_ID)).thenReturn(Optional.of(address));
         lenient().when(amenitiesRepository.findById(VALID_ID)).thenReturn(Optional.of(amenities));
         lenient().when(accommodationMapper.toModel(accommodationRequestDto))
@@ -106,12 +102,12 @@ class AccommodationServiceTest {
         when(accommodationRepository.save(accommodation)).thenReturn(accommodation);
 
         AccommodationResponseDto actual
-                = accommodationService.save(accommodationRequestDto, uriBuilder);
+                = accommodationService.save(accommodationRequestDto);
 
         assertEquals(accommodationResponseDto, actual);
         verify(accommodationRepository, times(1)).save(accommodation);
         verify(notificationService, times(1))
-                .createdAccommodation(accommodationResponseDto, uriBuilder);
+                .createdAccommodation(accommodationResponseDto);
     }
 
     @Test
@@ -122,7 +118,7 @@ class AccommodationServiceTest {
                 .thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> accommodationService.save(accommodationRequestDto, uriBuilder));
+                () -> accommodationService.save(accommodationRequestDto));
 
         assertEquals("Can't found address gy id: "
                 + accommodationRequestDto.getAddressId(), exception.getMessage());
@@ -171,7 +167,7 @@ class AccommodationServiceTest {
         when(amenitiesRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> accommodationService.save(accommodationRequestDto, uriBuilder));
+                () -> accommodationService.save(accommodationRequestDto));
         assertEquals("Can't find amenities by id:" + INVALID_ID, exception.getMessage());
     }
 

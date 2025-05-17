@@ -57,52 +57,49 @@ public class NotificationServiceImpl implements NotificationService {
     @Async
     @Transactional
     @Override
-    public void createdBooking(BookingResponseDto responseDto,
-                               UriComponentsBuilder urlBuilder) {
+    public void createdBooking(BookingResponseDto responseDto) {
         List<User> recipients = getAdminsAndManagers();
 
         for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildBookingNotificationText(responseDto),
-                    buildUrl(urlBuilder, PATH_BOOKINGS, responseDto.getId()));
+                    buildUrl(PATH_BOOKINGS, responseDto.getId()));
         }
     }
 
     @Async
     @Override
-    public void canceledBooking(Long telegramId, BookingResponseDto responseDto,
-                                UriComponentsBuilder urlBuilder, Booking.Status status) {
+    public void canceledBooking(Long telegramId,
+                                BookingResponseDto responseDto, Booking.Status status) {
         List<User> recipients = getAdminsAndManagers();
 
         for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildBookingNotificationText(responseDto),
-                    buildUrl(urlBuilder, PATH_BOOKINGS, responseDto.getId()));
+                    buildUrl(PATH_BOOKINGS, responseDto.getId()));
         }
     }
 
     @Async
     @Override
-    public void createdAccommodation(AccommodationResponseDto responseDto,
-                                     UriComponentsBuilder urlBuilder) {
+    public void createdAccommodation(AccommodationResponseDto responseDto) {
         List<User> recipients = getAdminsAndManagers();
 
         for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildAccommodationNotificationText(responseDto, CREATED),
-                    buildUrl(urlBuilder, PATH_ACCOMMODATION, responseDto.getId()));
+                    buildUrl(PATH_ACCOMMODATION, responseDto.getId()));
         }
     }
 
     @Override
-    public void releasedAccommodation(AccommodationResponseDto responseDto,
-                                      UriComponentsBuilder urlBuilder) {
+    public void releasedAccommodation(AccommodationResponseDto responseDto) {
         List<User> recipients = getAdminsAndManagers();
 
         for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildAccommodationNotificationText(responseDto, RELEASED),
-                    buildUrl(urlBuilder, PATH_ACCOMMODATION, responseDto.getId()));
+                    buildUrl(PATH_ACCOMMODATION, responseDto.getId()));
         }
     }
 
@@ -113,9 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
         for (User user : recipients) {
             telegramBotBookingApp.sendNotification(user.getTelegramId(),
                     buildPaymentNotification(paymentSuccessDto),
-                    buildUrl(
-                            UriComponentsBuilder.fromUriString(url + contextPath),
-                            PATH_BOOKINGS,
+                    buildUrl(PATH_BOOKINGS,
                             paymentSuccessDto.bookingId())
             );
         }
@@ -179,10 +174,9 @@ public class NotificationServiceImpl implements NotificationService {
                 + STATUS + booking.getStatus() + SEPARATION;
     }
 
-    private String buildUrl(UriComponentsBuilder builder, String path, Long id) {
-        return builder
+    private String buildUrl(String path, Long id) {
+        return UriComponentsBuilder.fromUriString(url + contextPath)
                 .pathSegment(path, id.toString())
-                .buildAndExpand(id)
                 .toUriString();
     }
 

@@ -4,11 +4,9 @@ import com.booking.bookingapp.dto.accommodation.AccommodationResponseDto;
 import com.booking.bookingapp.dto.accommodation.CreateAccommodationRequestDto;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public interface AccommodationService {
-    AccommodationResponseDto save(CreateAccommodationRequestDto requestDto,
-                                  UriComponentsBuilder urlBuilder);
+    AccommodationResponseDto save(CreateAccommodationRequestDto requestDto);
 
     List<AccommodationResponseDto> getAll(Pageable pageable);
 

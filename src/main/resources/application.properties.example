@@ -19,7 +19,7 @@ stripe.apikey=sk_test_your_apikey_stripe
 stripe.webhook.secret=your_stripe_webhook
 
 bot.token=your_telegram_token
-bot.name=your_boot_name
+bot.name=your_bot_name
 
 site.url=https://your_url_site
 

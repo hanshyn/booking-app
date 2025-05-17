@@ -1,5 +1,15 @@
 # 🏩 Booking Service API
 
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/hanshyn/booking-app/actions)
+[![Tests](https://img.shields.io/badge/tests-80%25-brightgreen)](https://github.com/hanshyn/booking-app/actions)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/)
+[![Postgres](https://img.shields.io/badge/db-PostgreSQL-blue)](https://www.postgresql.org/)
+[![Java](https://img.shields.io/badge/java-17-blue)](https://openjdk.org/projects/jdk/17/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.4-brightgreen)](https://spring.io/projects/spring-boot)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+
+
 ## 📜 Description
 
 This project is an advanced online management system for housing rentals, designed to replace antiquated, manual processes used by a local booking service. The goal is to revolutionize the housing rental experience by providing a seamless and efficient platform for both service administrators and renters. The system addresses challenges related to managing properties, renters, financial transactions, booking records, and limited payment options, aiming to simplify administrative tasks and enhance the renting experience.
@@ -24,7 +34,7 @@ The Accommodation Booking Service offers the following core functionalities:
 ## 📋 Technology Stack 
 The project is built using the following technologies:
 
-### Core
+### :atom: Core
 
 |           |                   Description                   |
 |:---------:|:-----------------------------------------------:|
@@ -40,14 +50,14 @@ The project is built using the following technologies:
 |  Spring Boot Security   |        Provides comprehensive authentication and authorization frameworks         |
 | Spring Boot Validation  |   Integration of Java Bean Validation (JSR 380) for data constraints and checks   |
 
-### Database & Migrations
+### 💿 Database & Migrations
 
 |               |                        Description                        |
 |:-------------:|:---------------------------------------------------------:|
 | MySQL 8.0.33  |           Relational database management system           |
 |   Liquibase   |   Database schema change management and version control   |
 
-### Testing
+### 🛡️ Testing
 
 |                 |                                 Description                                 |
 |:---------------:|:---------------------------------------------------------------------------:|
@@ -55,18 +65,22 @@ The project is built using the following technologies:
 | Testcontainers  |        Library to support integration tests using Docker containers         |
 |     Mockito     |         Mocking framework for creating mock objects for unit tests          |
 
-### Additions tools & libraries
+### 🧰 Additions tools & libraries
 
 |                            |                                   Description                                    |
 |:--------------------------:|:--------------------------------------------------------------------------------:|
 |           Lombok           | Reduces boilerplate code for Java classes (e.g., getters, setters, constructors) |
 |         MapStruct          |                Code generator for type-safe bean-to-bean mappings                |
 |            JWT             |   Standard for creating tokens that assert claims, used here for authorization   |
-|           Docker           |    Platform for developing, shippping, and running applications in containers    |
+|           Docker           |    Platform for developing, shipping, and running applications in containers     |
 |       Docker Compose       |        Tool for defining and running multi-container Docker applications         |
 |          Swagger           |    Set of tools built around the OpenAPI Specification for API documentation     |
 | Stripe (via `stripe-java`) |          Payment processing platform (used via its Java client library)          |
 |        Telegram API        |          Interface for interacting with the Telegram messaging service           |
+---
+
+## 🧱 Architecture Diagram
+![Architecture Diagram](docs/images/architecture.jpg)
 ---
 
 ## 	📍 Endpoints
@@ -81,10 +95,12 @@ The application provides a RESTful API with the following main controllers and e
 *(Note: Some endpoints require authentication (JWT Bearer Token or Basic) and specific roles as indicated in the project description.)*
 
 ---
+
 ## 🚀 Postman collections
-[Postman collections]()
+[Postman collections](docs/postman/bookingApp.postman_collection.json)
 
 ---
+
 ## 💻 How to run the project locally
 ### 1. Download [Java](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) and [Docker Desktop](https://www.docker.com/).
 ### 2. Clone the project:
@@ -129,7 +145,7 @@ stripe.apikey=sk_test_your_apikey_stripe
 stripe.webhook.secret=your_stripe_webhook
 
 bot.token=your_telegram_token
-bot.name=your_boot_name
+bot.name=your_bot_name
 
 site.url=https://your_url_site
 
@@ -150,7 +166,7 @@ docker-compose up --build
 
 ## 🌐 How to run the project in Codespaces
 ### 1. Create a Codespaces on master:
-![The Codespaces](images/codespaces.png "Create a codespaces on master")
+![The Codespaces](docs/images/codespaces.png "Create a codespaces on master")
 
 ### 2. Checking and Setting up Java in Codespaces:
 * verify if Java is installed in your Codespace:
@@ -173,26 +189,59 @@ java -version
 > export PATH=$JAVA_HOME/bin:$PATH
 > ```
 
-### 3. Add a .env file to the root folder and add your configuration.
+### 3.1 Add a .env file to the root folder and add your configuration.
 
 Example config:
 ```
-MYSQLDB_USER=root
-MYSQLDB_USER_PASSWORD=password
-MYSQLDB_USER_DATABASE=db_book_store
-MYSQLDB_USER_LOCAL_PORT=3308
-MYSQLDB_USER_DOCKER_PORT=3306
+POSTGRES_USER=YOUR_USER_NAME_DB
+POSTGRES_PASSWORD=YOUR_PASSWORD_DB
+POSTGRES_DATABASE=YOUR_NAME_DB
+POSTGRES_LOCAL_PORT=5434
+POSTGRES_DOCKER_PORT=5432
 
 SPRING_LOCAL_PORT=8088
 SPRING_DOCKER_PORT=8080
 DEBUG_PORT=5005
 ```
+
+### 3.2 Add the application.properties file
+Example application.properties:
+````
+# Example configuration file for booking-app
+# Copy this to 'application.properties' and fill in your real secrets
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/booking_app
+spring.datasource.username=your_user_name_db
+spring.datasource.password=your_password_db
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+server.servlet.context-path=/booking
+
+jwt.expiration=300000
+jwt.secret=your_jwt_secret_here
+
+stripe.apikey=sk_test_your_apikey_stripe
+stripe.webhook.secret=your_stripe_webhook
+
+bot.token=your_telegram_token
+bot.name=your_bot_name
+
+site.url=https://your_url_site
+
+spring.docker.compose.enabled=false
+
+````
+
 ### 4. Build the project:
 ```bash
 mvn clean install
 ```
 
-### 5. Start the project on Cpdespaces:
+### 5. Start the project on Codespaces:
 ```bash
 docker-compose up
 ```
@@ -202,5 +251,54 @@ docker-compose up
 * Copy the URL: Copy the forwarded address displayed next to the relevant port.
 * Open in browser: Open a new tab in your web browser.
 * Access Swagger UI: Paste the copied URL into the address bar.
-* Append the Swagger path: To the end of the URL, add the path `/swagger-ui/index.html.` The full address should look something like `https://your-codespace-url.github.dev/swagger-ui/index.html`
+* Append the Swagger path: To the end of the URL, add the path `/swagger-ui/index.html.` The full address should look something like `https://your-codespace-url.github.dev/swagger-ui/index.html` example link: `https://bookish-memory-5wgrxgrw6w6377g7-8088.app.github.dev/booking/swagger-ui/index.html#`
 * Go: Press Enter to navigate to the Swagger UI page. From there, you can explore and test the API endpoints.
+---
+
+## 📌 Use Case Example: Booking Flow (Guest)
+1. A user registers via /api/auth/register
+2. Logs in and receives a JWT token
+3. Views available accommodations via /accommodations
+4. Books a property through /bookings
+5. Makes a payment via /payments and receives a confirmation via Telegram notification
+---
+
+## 🔐 JWT Authorization in Swagger
+> ⚠️ Most endpoints require authorization via JWT.  
+> After logging in via `/api/auth/login`, copy the token and click **"Authorize"** in Swagger UI.  
+> Use the token as a Bearer token: `Bearer eyJhbGciOiJI...`
+---
+
+## 💬 Telegram Bot Screenshots
+
+### ▶️ Start the Telegram Bot
+![Start](docs/images/telegram/telegram_1.jpg "Start telegram bot")
+
+### ℹ️ "About Bot" Button
+![About bot](docs/images/telegram/telegram_2.jpg "About telegram bot")
+
+### 🔍 "Your Role" and 📨 "Subscribe" Buttons
+![Role](docs/images/telegram/telegram_3.jpg)
+
+### New Accommodation Notification with "Details" button
+![Accommodation](docs/images/telegram/telegram_4.jpg)
+
+### Accommodation details in JSON format  
+![](docs/images/telegram/telegram_5.jpg)
+
+### Notification for new booking (ID:9) and payment confirmation 
+![](docs/images/telegram/telegram_6.jpg)
+
+---
+
+## 💳 Stripe Payment Screenshots
+
+### 🧾 Start payment for Booking (ID:7)
+![](docs/images/stripe/stripe_1.png)
+### 💳 Enter test payment data
+![](docs/images/stripe/stripe_2.png)
+### ✅  Payment result - Confirmation page 
+![](docs/images/stripe/stripe_3.png)
+
+
+

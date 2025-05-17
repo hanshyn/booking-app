@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Transactional
 @RequiredArgsConstructor
@@ -36,8 +35,7 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final EntityManager entityManager;
 
     @Override
-    public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto,
-                                         UriComponentsBuilder uriBuilder) {
+    public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto) {
         Accommodation accommodation = accommodationMapper.toModel(requestDto);
         accommodation.setLocation(getAddressById(requestDto.getAddressId()));
         accommodation.setAmenities(getAmenitiesByIds(requestDto.getAmenitiesId()));
@@ -45,7 +43,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         AccommodationResponseDto responseDto =
                 accommodationMapper.toDto(accommodationRepository.save(accommodation));
 
-        notificationService.createdAccommodation(responseDto, uriBuilder);
+        notificationService.createdAccommodation(responseDto);
         return responseDto;
     }
 
