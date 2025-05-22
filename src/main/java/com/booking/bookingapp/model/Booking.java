@@ -42,11 +42,11 @@ public class Booking {
     private LocalDate checkOutDate;
 
     @JoinColumn(name = "accommodation_id", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
 
     @JoinColumn(name = "user_id", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Enumerated(EnumType.STRING)
