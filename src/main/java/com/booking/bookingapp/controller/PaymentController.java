@@ -4,7 +4,6 @@ import com.booking.bookingapp.dto.payment.PaymentCancelDto;
 import com.booking.bookingapp.dto.payment.PaymentRequestDto;
 import com.booking.bookingapp.dto.payment.PaymentResponseDto;
 import com.booking.bookingapp.dto.payment.PaymentSuccessDto;
-import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.exception.PaymentException;
 import com.booking.bookingapp.service.payment.PaymentService;
 import com.stripe.exception.SignatureVerificationException;
@@ -24,10 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -165,11 +161,5 @@ public class PaymentController {
             @RequestParam("session_id") String sessionId) {
         log.info("Received request to fetch payment cancel");
         return paymentService.handlerCansel(sessionId);
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error("Entity not found; {}", ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

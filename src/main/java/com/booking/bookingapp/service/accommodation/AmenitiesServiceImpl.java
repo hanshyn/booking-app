@@ -59,7 +59,9 @@ public class AmenitiesServiceImpl implements AmenitiesService {
                 .findAccommodationByAmenities_Id(id);
 
         for (Accommodation accommodation : accommodations) {
-            accommodation.getAmenities().removeIf(a -> a.getId().equals(id));
+            accommodation.getAmenities().removeIf(
+                    amenities -> amenities.getId().equals(id)
+            );
             accommodationRepository.save(accommodation);
         }
         amenitiesRepository.deleteById(id);

@@ -4,7 +4,6 @@ import com.booking.bookingapp.dto.booking.BookingRequestDto;
 import com.booking.bookingapp.dto.booking.BookingResponseDto;
 import com.booking.bookingapp.dto.booking.BookingSearchParameters;
 import com.booking.bookingapp.dto.booking.UpdateBookingRequestDto;
-import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.model.User;
 import com.booking.bookingapp.service.booking.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -151,11 +148,5 @@ public class BookingController {
             @PathVariable Long id) {
         log.info("Deleting booking by ID: {}", id);
         bookingService.deleteById(id);
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error("Entity not found: {}", ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

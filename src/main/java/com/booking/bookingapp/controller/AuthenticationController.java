@@ -4,7 +4,6 @@ import com.booking.bookingapp.dto.user.UserLoginRequestDto;
 import com.booking.bookingapp.dto.user.UserLoginResponseDto;
 import com.booking.bookingapp.dto.user.UserRegistrationRequestDto;
 import com.booking.bookingapp.dto.user.UserResponseDto;
-import com.booking.bookingapp.exception.EntityNotFoundException;
 import com.booking.bookingapp.exception.RegistrationException;
 import com.booking.bookingapp.security.AuthenticationService;
 import com.booking.bookingapp.service.user.UserService;
@@ -18,8 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,17 +71,5 @@ public class AuthenticationController {
             @RequestBody @Valid UserLoginRequestDto requestDto) {
         log.info("Login credentials for authentication: {}", requestDto.email());
         return authenticationService.authenticate(requestDto);
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error("Entity not found: {}", ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<String> handleRegistrationException(RegistrationException ex) {
-        log.error("Registration failed: {}", ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
