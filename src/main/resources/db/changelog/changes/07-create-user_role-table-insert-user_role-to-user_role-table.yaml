@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user_role-table
+      author: hanshyn
+      changes:
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_user_id
+                    references: users(user_id)
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_role_id
+                    references: roles(role_id)
+        - insert:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT user_id FROM users WHERE email='admin@gmail.com')
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT role_id FROM roles WHERE roles='ADMIN')
+        - insert:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT user_id FROM users WHERE email='user@gmail.com')
+              - column:
+                  name: role_id
+                  valueComputed: (SELECT role_id FROM roles WHERE roles='USER')

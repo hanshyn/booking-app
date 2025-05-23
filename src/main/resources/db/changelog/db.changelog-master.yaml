@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/01-create-addresses-table-insert-address-to-addresses-table.yaml
+  - include:
+      file: db/changelog/changes/02-create-amenities-table-insert-amenities-to-amenities-table.yaml
+  - include:
+      file: db/changelog/changes/03-create-accommodation-table-insert-accommodation-to-accommodation-table.yaml
+  - include:
+      file: db/changelog/changes/04-create-accommodation-amenities-table-and-insert.yaml
+  - include:
+      file: db/changelog/changes/05-create-users-table-and-insert-users-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/06-create-roles-table-insert-role-to-roles-table.yaml
+  - include:
+      file: db/changelog/changes/07-create-user_role-table-insert-user_role-to-user_role-table.yaml
+  - include:
+      file: db/changelog/changes/08-create-booking-table-insert-booking-to-booking-table.yaml
+  - include:
+      file: db/changelog/changes/09-update-password-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/10-add-column-tgId-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/11-create-payments-table.yaml
+  - include:
+      file: db/changelog/changes/12-add-column-is-deleted-to-booking-and payment-table.yaml
+  - include:
+      file: db/changelog/changes/13-add-column-is-active-to-accommodation-table.yaml

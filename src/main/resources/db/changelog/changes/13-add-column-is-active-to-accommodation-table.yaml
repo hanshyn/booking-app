@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-column-is-active-to-accommodation-table
+      author: hanshyn
+      changes:
+        - addColumn:
+            tableName: accommodation
+            columns:
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+

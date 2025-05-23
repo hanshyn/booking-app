@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-amenities-table
+      author: hanshyn
+      changes:
+        - createTable:
+            tableName: amenities
+            columns:
+              - column:
+                  name: amenities_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: amenities
+            columns:
+              - column: {name: name, value: "shower"}
+              - column: {name: description, value: "hot and cold water"}
